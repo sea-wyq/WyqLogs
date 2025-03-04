@@ -321,10 +321,8 @@ python3 benchmarks/benchmark_serving.py \
 --host 120.92.208.206 \
 --port 1025 \
 --dataset-name random \
-
 --random-input 1024 \
 --random-output 1024 \
-
 --max-concurrency 16 \
 --num-prompts 20
 ```

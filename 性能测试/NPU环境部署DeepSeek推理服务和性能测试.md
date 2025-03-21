@@ -8,6 +8,7 @@
 - [工具编译-HCCL性能测试工具-训练&推理开发-开发工具-CANN商用版8.0.RC3开发文档-昇腾社区](https://www.hiascend.com/document/detail/zh/canncommercial/80RC3/devaids/devtools/hccltool/HCCLpertest_16_0003.html)
 - [State_Cloud/DeepSeek-R1-W8A8 | 魔乐社区](https://modelers.cn/models/State_Cloud/DeepSeek-R1-W8A8)
 - [性能测试-快速开始-MindIE Service开发指南-服务化集成部署-MindIE1.0.0开发文档-昇腾社区](https://www.hiascend.com/document/detail/zh/mindie/100/mindieservice/servicedev/mindie_service0012.html)
+- [MindIE Benchmark](https://www.hiascend.com/document/detail/zh/mindie/100/mindieservice/servicedev/mindie_service0012.html)
 
 ## 实验环境 
 NPU卡

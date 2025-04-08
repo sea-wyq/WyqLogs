@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: prometheus-federation
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: dev69-prometheus
+  namespaceSelector:
+    matchNames:
+      - <your-namespace>
+  endpoints:
+    - port: http
+      interval: 30s
+      honorLabels: true
+      path: /federate
+      params:
+        'match[]':
+          - '{job=~"node-exporter|kube-state-metrics|kubelet|dcgm-exporter|npu-exporter|kubernetes-pods"}'    

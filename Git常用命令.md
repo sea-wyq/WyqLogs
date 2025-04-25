@@ -85,3 +85,63 @@ git pull --rebase origin <分支名>             # 使用rebase方式拉取并�
 git clone -b <分支名> <仓库URL>               # 克隆指定分支的代码
 git clone --branch <标签名> <仓库URL>         # 克隆指定标签的代码
 ```
+
+## Git之配置多SSH-KEY
+
+现存账号类型:
+1. gitee账号，国产github，码云值得拥有
+2. github账号，全球最大同性交友网站
+3. gitlab账号，公司内部的工作开发 
+
+解决办法很简单，新建一个config文件就可以了。
+1. 本地生成SSH-Key
+    生成一个gitee用的SSH-Key
+    ```bash
+    ssh-keygen -t rsa -C 'xxxxx@163.com' -f ~/.ssh/gitee_id_rsa
+    ```
+    生成一个github用的SSH-Key
+    ```bash
+    ssh-keygen -t rsa -C 'xxxxx@163.com' -f ~/.ssh/github_id_rsa
+    ```
+    生成一个公司用gitlab的SSH-Key
+    ```bash
+    ssh-keygen -t rsa -C 'xxxxx@company.com' -f ~/.ssh/gitlab_id_rsa
+    ```
+
+2. git平台设置中
+将 .pub 文件中内容复制到相应的平台SSH设置中，
+例如：gitee_id_rsa.pub中的文件内容复制到码云的SSH公钥中。 
+
+3. 新建config文件
+    在 ~/.ssh 目录下新建一个config文件(无扩展名)，添加如下内容：
+    ```bash
+    # gitee
+    Host gitee.com
+    HostName gitee.com
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/gitee_id_rsa
+
+    # github
+    Host github.com
+    HostName github.com
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/github_id_rsa
+
+    # gitlab
+    Host xxxx.com
+    HostName xxxx.com
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/gitlab_id_rsa
+    ```
+    其中Host和HostName填写git服务器的域名，IdentityFile指定私钥的路径。
+实在不晓得Host和HostName怎么填的呢，譬如不知道公司内部的服务器域名，可以在known_hosts文件中查看。 
+4. 测试是否联通
+    用ssh命令分别测试，@后面跟着的是域名呀。
+    ```bash
+    $ ssh -T git@gitee.com
+    $ ssh -T git@github.com
+    $ ssh -T git@xxxx.com
+    ```
+
+看到界面返回欢迎标语的时候，就说明成功啦。
+至此，你就可以在同一台电脑上，愉快的进行各大平台的代码提交。

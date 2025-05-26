@@ -110,7 +110,7 @@ for epoch in range(10):
 2. 填写任务名称并选择平台镜像，（下方提供的示例脚本，已经提前写入截图中所展示的平台镜像中，也可自行挂载示例代码。）
 3. 根据选择的多卡套餐，填写并修改分布式训练命令，
 
-[image-2025-05-07](https://fourt-wyq.oss-cn-shanghai.aliyuncs.com/images/image-2025-05-07.png)
+![image-2025-05-07](https://fourt-wyq.oss-cn-shanghai.aliyuncs.com/images/image-2025-05-07.png)
 ![image-1-2025-05-07](https://fourt-wyq.oss-cn-shanghai.aliyuncs.com/images/image-1-2025-05-07.png)
 
 根据上面选择的NPU套餐，填写训练命令。单机4卡场景下的执行命令如下：
@@ -124,3 +124,11 @@ mpirun -n 4 --allow-run-as-root --output-filename log_output --merge-stderr-to-s
 点击确认后，等待训练结果如下：
 
 ![image-2-2025-05-07](https://fourt-wyq.oss-cn-shanghai.aliyuncs.com/images/image-2-2025-05-07.png)
+
+
+
+注：
+
+![alt text](image.png)
+
+https://www.hiascend.com/document/detail/zh/Atlas%20200I%20A2/24.1.RC3/ep/installationguide/Install_99.html

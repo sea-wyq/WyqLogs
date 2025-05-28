@@ -127,8 +127,17 @@ mpirun -n 4 --allow-run-as-root --output-filename log_output --merge-stderr-to-s
 
 
 
+npu-smi info 命令显示device正在被使用。
+
 注：
 
 ![alt text](image.png)
 
 https://www.hiascend.com/document/detail/zh/Atlas%20200I%20A2/24.1.RC3/ep/installationguide/Install_99.html
+
+
+herokey 调整权限
+node-exporter 调整代码
+grafana 调整面板
+前端调整页面
+

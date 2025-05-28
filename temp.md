@@ -43,6 +43,8 @@ System@323
 
 
 
+
+
 项目经验要求
 作为公司一般项目负责人完成至少3个公司一般项目，并取得预期成果，产出相应技术文档。
 
@@ -83,3 +85,29 @@ DeepSpeed，ColossalAI 大模型框架调研和落地方案设计
 
 
 
+
+
+ labels:
+    job-type.system.hero.ai: TrainingJob
+    resourcepool.system.hero.ai: a14078179380686848491473
+    system.hero.ai/job-name: a15787703687180288704327
+    system.hero.ai/job-namespace: hero-user
+    tenant.id: "12027394361880000"
+    user.id: bx57d89f0a785e427d88a6a2d8573d86a4
+
+ labels:
+    fuse.serverful.fluid.io/inject: "true"
+    job-type.system.hero.ai: TrainingJob
+    resourcepool.system.hero.ai: a14078179380686848491473
+    system.hero.ai/job-name: a15787703687180288704327
+    system.hero.ai/job-namespace: hero-user
+    tenant.id: "12027394361880000"
+    user.id: bx57d89f0a785e427d88a6a2d8573d86a4
+    volcano.sh/job-name: tj-a15787703687180288704327
+    volcano.sh/job-namespace: hero-user
+    volcano.sh/queue-name: default
+    volcano.sh/task-spec: worker
+
+
+
+经过验证trainingjob得label会直接传递到podlabel上面。

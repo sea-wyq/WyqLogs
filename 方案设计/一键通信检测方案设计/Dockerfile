@@ -1,10 +1,34 @@
 FROM nvidia/cuda:12.2.2-devel-ubuntu22.04
 
-RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-packages --no-install-recommends infiniband-diags iproute2 net-tools \
-    openssh-server wget vim perftest ibverbs-providers libibumad3 libibverbs1 libnl-3-200 libnl-route-3-200 librdmacm1 libnccl2=2.23.4-1+cuda12.7 libnccl-dev=2.23.4-1+cuda12.7
+USER root
 
-# install openmpi
-RUN apt install -y openmpi-bin libopenmpi-dev
+RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list && \
+    sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
-# install nccl-tests
-RUN cd ~ && wget https://github.com/NVIDIA/nccl-tests/archive/refs/tags/v2.13.11.tar.gz && tar -zxvf v2.13.11.tar.gz && cd nccl-tests-2.13.11 && make -j40 MPI=1 MPI_HOME=/usr/lib/x86_64-linux-gnu/openmpi CUDA_HOME=/usr/local/cuda NCCL_HOME=/usr/lib/x86_64-linux-gnu
+ENV LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ENV TZ=Asia/Shanghai
+ENV SHELL=/bin/bash
+
+RUN rm -rf /var/lib/apt/lists/* && \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        apt-utils build-essential ca-certificates software-properties-common \
+        wget curl vim git openssh-server tmux htop iputils-ping iproute2 net-tools unzip tzdata locales && \
+    ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone && \
+    locale-gen en_US.UTF-8 && \
+    ldconfig && \
+    apt-get clean && \
+    apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/* /tmp/* ~/*
+
+
+COPY nccl-tests nccl-tests
+
+RUN cd  nccl-tests && \
+    make -j40
+
+COPY MLNX_OFED_LINUX-5.8-6.0.4.2-ubuntu22.04-x86_64.tgz MLNX_OFED_LINUX-5.8-6.0.4.2-ubuntu22.04-x86_64.tgz
+
+RUN tar -zxvf MLNX_OFED_LINUX-5.8-6.0.4.2-ubuntu22.04-x86_64.tgz && \
+    cd MLNX_OFED_LINUX-5.8-6.0.4.2-ubuntu22.04-x86_64 &&  \
+    ./mlnxofedinstall --user-space-only --without-fw-update --force

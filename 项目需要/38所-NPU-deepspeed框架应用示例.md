@@ -224,3 +224,6 @@ immintrin.h是 Intel 处理器的 SIMD 指令集头文件，ARM 架构（如 aar
 
 
 但在其它环境验证过，npu deepspeed是可以正常训练，推测可能是38所得npu服务器环境存在问题。
+
+
+Npu 安装的是最新的驱动。

@@ -187,3 +187,5 @@ colossalai官方并没有提供npu训练得相关示例。无法进行验证。
 
 
 colossalai  不支持cpu 运行，必须添加--nproc_per_node参数
+
+Npu安装的是最新的驱动。

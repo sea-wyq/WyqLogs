@@ -11,11 +11,6 @@ metadata:
 apiVersion: batch.volcano.sh/v1alpha1
 kind: Job
 metadata:
-  labels:
-    hero.ai/kind: TrainingJob
-    system.hero.ai/job-name: m123456
-    system.hero.ai/job-namespace: default
-    vendor: job.hero.ai
   name: trainingjob-m123456
   namespace: default
 spec:
@@ -40,16 +35,9 @@ spec:
     template:
       metadata:
         annotations:
-          leinao.ai/storage-managed: "true"
-          volcano.sh/task-topology-affinity: m1,m2
-          volcano.sh/task-topology-task-order: m1,m2
-        labels:
-          app: colossalai
-          fuse.serverful.fluid.io/inject: "true"
-          resourcepool.system.hero.ai: default
-          system.hero.ai/job-name: m123456
-          system.hero.ai/job-namespace: default
+          k8s.v1.cni.cncf.io/networks: kube-system/macvlan-conf1
       spec:
+        nodeName: a100-gpu-1
         containers:
         - command:
           - sh
@@ -71,8 +59,7 @@ spec:
                 fieldPath: status.podIP
           - name: TZ
             value: Asia/Shanghai
-          image:  registry.cnbita.com:5000/cluster-images/nccl-tests:v2.13-cuda12.2
-          imagePullPolicy: Always
+          image:  xj-registry.bitahub.com:5000/autotest0304/nvidia-pytorch:24.01-py3-rdma-nccltest
           name: main
           ports:
           - containerPort: 22
@@ -80,9 +67,11 @@ spec:
             protocol: TCP
           resources:
             limits:
-              nvidia.com/nvidia-rtx-3090-24GB: 2
+              nvidia.com/nvidia-a100-sxm4-80GB: 2
+              rdma/hca: "1"
             requests:
-              nvidia.com/nvidia-rtx-3090-24GB: 2
+              nvidia.com/nvidia-a100-sxm4-80GB: 2
+              rdma/hca: "1"
           volumeMounts:
           - mountPath: /etc/timezone
             name: mount-timezone
@@ -122,16 +111,9 @@ spec:
     template:
       metadata:
         annotations:
-          leinao.ai/storage-managed: "true"
-          volcano.sh/task-topology-affinity: m1,m2
-          volcano.sh/task-topology-task-order: m1,m2
-        labels:
-          app: colossalai
-          fuse.serverful.fluid.io/inject: "true"
-          resourcepool.system.hero.ai: default
-          system.hero.ai/job-name: m123456
-          system.hero.ai/job-namespace: default
+          k8s.v1.cni.cncf.io/networks: kube-system/macvlan-conf1
       spec:
+        nodeName: a100-gpu-2
         containers:
         - command:
           - sh
@@ -153,8 +135,7 @@ spec:
                 fieldPath: status.podIP
           - name: TZ
             value: Asia/Shanghai
-          image:  registry.cnbita.com:5000/cluster-images/nccl-tests:v2.13-cuda12.2
-          imagePullPolicy: Always
+          image:  xj-registry.bitahub.com:5000/autotest0304/nvidia-pytorch:24.01-py3-rdma-nccltest
           name: main
           ports:
           - containerPort: 22
@@ -162,9 +143,11 @@ spec:
             protocol: TCP
           resources:
             limits:
-              nvidia.com/nvidia-rtx-3090-24GB: 2
+              nvidia.com/nvidia-a100-sxm4-80GB: 2
+              rdma/hca: "1"
             requests:
-              nvidia.com/nvidia-rtx-3090-24GB: 2
+              nvidia.com/nvidia-a100-sxm4-80GB: 2
+              rdma/hca: "1"
           volumeMounts:
           - mountPath: /etc/timezone
             name: mount-timezone

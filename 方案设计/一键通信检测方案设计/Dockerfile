@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.2.2-devel-ubuntu22.04
+FROM xj-registry.bitahub.com:5000/autotest0304/nvidia-pytorch:24.01-py3-rdma
 
 USER root
 
@@ -21,14 +21,5 @@ RUN rm -rf /var/lib/apt/lists/* && \
     apt-get autoremove && \
     rm -rf /var/lib/apt/lists/* /tmp/* ~/*
 
-
 COPY nccl-tests nccl-tests
-
-RUN cd  nccl-tests && \
-    make -j40
-
-COPY MLNX_OFED_LINUX-5.8-6.0.4.2-ubuntu22.04-x86_64.tgz MLNX_OFED_LINUX-5.8-6.0.4.2-ubuntu22.04-x86_64.tgz
-
-RUN tar -zxvf MLNX_OFED_LINUX-5.8-6.0.4.2-ubuntu22.04-x86_64.tgz && \
-    cd MLNX_OFED_LINUX-5.8-6.0.4.2-ubuntu22.04-x86_64 &&  \
-    ./mlnxofedinstall --user-space-only --without-fw-update --force
+RUN cd  nccl-tests && make -j40

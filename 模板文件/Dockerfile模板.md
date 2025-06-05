@@ -2,6 +2,7 @@
 # FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
 FROM registry.bitahub.com:5000/dockerhub/nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
 
+
 USER root
 
 # 配置 ubuntu apt 源为中科大镜像源

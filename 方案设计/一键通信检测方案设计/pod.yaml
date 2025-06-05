@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test
+  namespace: default
+  annotations:
+    k8s.v1.cni.cncf.io/networks: kube-system/macvlan-conf1
+spec:
+  containers:
+  - command:
+    - sh
+    - -c
+    - |
+      nvidia-smi
+      cd nccl-tests/build/
+      ./all_reduce_perf -b 512M -e 16G  -f 2 -g 2
+      sleep 36000
+    image: xj-registry.bitahub.com:5000/autotest0304/nvidia-pytorch:24.01-py3-rdma-nccltest
+    imagePullPolicy: IfNotPresent
+    name: main
+    securityContext:
+      capabilities:
+        add: ["IPC_LOCK"] 
+    volumeMounts:
+    - name: infiniband
+      mountPath: /dev/infiniband
+      readOnly: false
+    env:
+    #   - name: NVIDIA_VISIBLE_DEVICES
+    #     value: none  # 禁用 GPU 自动挂载
+      - name: CUDA_VISIBLE_DEVICES
+        value: ""    # 确保 CUDA 不可见
+  volumes:
+  - name: infiniband
+    hostPath:
+      path: /dev/infiniband
+      type: Directory
+  nodeName: a100-gpu-1
+  nodeSelector:
+    node-role.kubernetes.io/training: "true"

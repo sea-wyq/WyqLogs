@@ -1,50 +1,110 @@
 # 基于Nccl-test进行GPU通信测试
 
-## 参考文档
-[nccl-test 使用指引-腾讯云开发者社区-腾讯云](https://cloud.tencent.com/developer/article/2361710)
 
-测试示例
+如果出现nccl.h找不到，需要安装nccl库。
+
+1. 检查依赖项
+
+   sudo ldconfig  # 更新缓存，使系统能找到新添加的库
+   ldd ./all_reduce_perf | grep nccl  
+
+   ![image-2025-06-11](https://fourt-wyq.oss-cn-shanghai.aliyuncs.com/images/image-2025-06-11.png)
+   ![image-1-2025-06-11](https://fourt-wyq.oss-cn-shanghai.aliyuncs.com/images/image-1-2025-06-11.png)
+
+2. nccl 安装
+
+   ```bash
+   Network Installer for Ubuntu22.04
+
+   $ wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+   $ sudo dpkg -i cuda-keyring_1.1-1_all.deb
+   $ sudo apt-get update
+   Network Installer for Ubuntu20.04
+
+   $ wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.1-1_all.deb
+   $ sudo dpkg -i cuda-keyring_1.1-1_all.deb
+   $ sudo apt-get update
+   Network Installer for RedHat/CentOS 9
+
+   $ sudo dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/cuda-rhel9.repo
+   Network Installer for RedHat/CentOS 8
+
+   $ sudo dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo
+
+
+   For Ubuntu: sudo apt install libnccl2=2.27.3-1+cuda12.4 libnccl-dev=2.27.3-1+cuda12.4
+   For RHEL/Centos: sudo yum install libnccl-2.27.3-1+cuda12.4 libnccl-devel-2.27.3-1+cuda12.4 libnccl-static-2.27.3-1+cuda12.4
+
+   ```
+
+
+
+## 测试示例
+
+克隆仓库
+
 ```bash
 git clone https://github.com/NVIDIA/nccl-tests.git
+```
 
+编译
+
+```bash
+
+# 不支持多机通信算子测试
 make -j40
 
+# 支持多机通信算子测试
+make MPI=1 MPI_HOME=/usr/lib/x86_64-linux-gnu/openmpi CUDA_HOME=/usr/local/cuda NCCL_HOME=/usr/lib/x86_64-linux-gnu
+```
+
+验证
+
+```bash
+
 ./all_reduce_perf -b 8 -e 512M -f 2 -g 1
+
+
+mpirun -np 2 -H a100-44,a100-43  --allow-run-as-root -bind-to none -map-by slot -mca coll_hcoll_enable 0 -mca pml ob1 -mca btl_tcp_if_include  bond0 -mca btl ^openib -x NCCL_IB_GID_INDEX=3 -x NCCL_SOCKET_IFNAME=bond0  -x NCCL_IB_HCA=^mlx5_8 -x NCCL_IB_TC=128 -x NCCL_IB_QPS_PER_CONNECTION=8 -x NCCL_DEBUG=INFO -x NCCL_ALGO=Ring ./all_reduce_perf -b 32M -e 8G  -f 2 -g 8
+
+
 # nThread 1 nGpus 1 minBytes 8 maxBytes 536870912 step: 2(factor) warmup iters: 5 iters: 20 agg iters: 1 validation: 1 graph: 0
 
+# nThread 1 nGpus 8 minBytes 536870912 maxBytes 17179869184 step: 2(factor) warmup iters: 5 iters: 20 agg iters: 1 validation: 1 graph: 0
+#
 # Using devices
-#  Rank  0 Group  0 Pid   1340 on 821a844d28ee device  0 [0x1b] NVIDIA GeForce RTX 3090
+#  Rank  0 Group  0 Pid  88731 on    a100-44 device  0 [0000:27:00] NVIDIA A100-SXM4-80GB
+#  Rank  1 Group  0 Pid  88731 on    a100-44 device  1 [0000:2a:00] NVIDIA A100-SXM4-80GB
+#  Rank  2 Group  0 Pid  88731 on    a100-44 device  2 [0000:51:00] NVIDIA A100-SXM4-80GB
+#  Rank  3 Group  0 Pid  88731 on    a100-44 device  3 [0000:57:00] NVIDIA A100-SXM4-80GB
+#  Rank  4 Group  0 Pid  88731 on    a100-44 device  4 [0000:9e:00] NVIDIA A100-SXM4-80GB
+#  Rank  5 Group  0 Pid  88731 on    a100-44 device  5 [0000:a4:00] NVIDIA A100-SXM4-80GB
+#  Rank  6 Group  0 Pid  88731 on    a100-44 device  6 [0000:c7:00] NVIDIA A100-SXM4-80GB
+#  Rank  7 Group  0 Pid  88731 on    a100-44 device  7 [0000:ca:00] NVIDIA A100-SXM4-80GB
+#  Rank  8 Group  0 Pid  92057 on    a100-43 device  0 [0000:27:00] NVIDIA A100-SXM4-80GB
+#  Rank  9 Group  0 Pid  92057 on    a100-43 device  1 [0000:2a:00] NVIDIA A100-SXM4-80GB
+#  Rank 10 Group  0 Pid  92057 on    a100-43 device  2 [0000:51:00] NVIDIA A100-SXM4-80GB
+#  Rank 11 Group  0 Pid  92057 on    a100-43 device  3 [0000:57:00] NVIDIA A100-SXM4-80GB
+#  Rank 12 Group  0 Pid  92057 on    a100-43 device  4 [0000:9e:00] NVIDIA A100-SXM4-80GB
+#  Rank 13 Group  0 Pid  92057 on    a100-43 device  5 [0000:a4:00] NVIDIA A100-SXM4-80GB
+#  Rank 14 Group  0 Pid  92057 on    a100-43 device  6 [0000:c7:00] NVIDIA A100-SXM4-80GB
+#  Rank 15 Group  0 Pid  92057 on    a100-43 device  7 [0000:ca:00] NVIDIA A100-SXM4-80GB
 #
 #                                                              out-of-place                       in-place          
 #       size         count      type   redop    root     time   algbw   busbw #wrong     time   algbw   busbw #wrong
 #        (B)    (elements)                               (us)  (GB/s)  (GB/s)            (us)  (GB/s)  (GB/s)       
-           8             2     float     sum      -1     4.90    0.00    0.00      0     0.16    0.05    0.00      0
-          16             4     float     sum      -1     4.11    0.00    0.00      0     0.16    0.10    0.00      0
-          32             8     float     sum      -1     3.93    0.01    0.00      0     0.16    0.20    0.00      0
-          64            16     float     sum      -1     4.08    0.02    0.00      0     0.16    0.40    0.00      0
-         128            32     float     sum      -1     4.07    0.03    0.00      0     0.16    0.82    0.00      0
-         256            64     float     sum      -1     4.12    0.06    0.00      0     0.16    1.59    0.00      0
-         512           128     float     sum      -1     3.98    0.13    0.00      0     0.16    3.24    0.00      0
-        1024           256     float     sum      -1     4.06    0.25    0.00      0     0.16    6.33    0.00      0
-        2048           512     float     sum      -1     4.00    0.51    0.00      0     0.16   12.91    0.00      0
-        4096          1024     float     sum      -1     4.14    0.99    0.00      0     0.17   24.69    0.00      0
-        8192          2048     float     sum      -1     4.05    2.02    0.00      0     0.16   51.26    0.00      0
-       16384          4096     float     sum      -1     4.03    4.06    0.00      0     0.16  100.82    0.00      0
-       32768          8192     float     sum      -1     4.04    8.11    0.00      0     0.16  204.93    0.00      0
-       65536         16384     float     sum      -1     4.06   16.13    0.00      0     0.16  415.84    0.00      0
-      131072         32768     float     sum      -1     4.05   32.36    0.00      0     0.16  830.62    0.00      0
-      262144         65536     float     sum      -1     4.17   62.80    0.00      0     0.16  1641.48    0.00      0
-      524288        131072     float     sum      -1     4.21  124.58    0.00      0     0.16  3207.64    0.00      0
-     1048576        262144     float     sum      -1     5.07  206.91    0.00      0     0.16  6559.75    0.00      0
-     2097152        524288     float     sum      -1     7.92  264.89    0.00      0     0.16  13197.94    0.00      0
-     4194304       1048576     float     sum      -1    12.67  331.05    0.00      0     0.16  25653.24    0.00      0
-     8388608       2097152     float     sum      -1    22.95  365.58    0.00      0     0.16  53244.10    0.00      0
-    16777216       4194304     float     sum      -1    42.93  390.79    0.00      0     0.16  104368.37    0.00      0
-    33554432       8388608     float     sum      -1    82.83  405.08    0.00      0     0.16  213450.59    0.00      0
-    67108864      16777216     float     sum      -1    162.4  413.12    0.00      0     0.16  410451.77    0.00      0
-   134217728      33554432     float     sum      -1    321.2  417.81    0.00      0     0.16  830298.35    0.00      0
-   268435456      67108864     float     sum      -1    638.5  420.41    0.00      0     0.16  1675104.25    0.00      0
-   536870912     134217728     float     sum      -1   1274.7  421.17    0.00      0     0.17  3253763.10    0.00      0
+33554432        524288     float    none      -1   1047.8   32.02   30.02      0   1015.2   33.05   30.99    N/A
+    67108864       1048576     float    none      -1   1914.8   35.05   32.86      0   1921.0   34.94   32.75    N/A
+   134217728       2097152     float    none      -1   3651.2   36.76   34.46      0   3621.3   37.06   34.75    N/A
+   268435456       4194304     float    none      -1   6970.0   38.51   36.11      0   6948.6   38.63   36.22    N/A
+   536870912       8388608     float    none      -1    13653   39.32   36.87      0    13571   39.56   37.09    N/A
+  1073741824      16777216     float    none      -1    26893   39.93   37.43      0    26875   39.95   37.46    N/A
+  2147483648      33554432     float    none      -1    53381   40.23   37.71      0    53255   40.32   37.80    N/A
+  4294967296      67108864     float    none      -1   106262   40.42   37.89      0   106112   40.48   37.95    N/A
+  8589934592     134217728     float    none      -1   212152   40.49   37.96      0   211851   40.55   38.01    N/A
 # Out of bounds values : 0 OK
-# Avg bus bandwidth    : 0
+# Avg bus bandwidth    : 35.7955
 ```
+
+## 参考文档
+[nccl-test 使用指引-腾讯云开发者社区-腾讯云](https://cloud.tencent.com/developer/article/2361710)

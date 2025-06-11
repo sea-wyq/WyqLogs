@@ -168,3 +168,31 @@ GPU 掉卡检查
 存储挂载检查
 
 定期使用mount命令检查存储挂载点的状态，确保挂载点已正确挂载且可读写。同时，通过尝试读取和写入测试文件来验证存储的可用性。例如，在挂载点下创建一个临时文件并写入数据，然后读取该文件，检查数据是否一致。若挂载点未挂载或读写操作失败，则判定存储挂载存在问题。
+
+
+
+npu_chip_info_temperature{pod_name=""} *on (pod) group_left(node) kube_pod_info{node="$node"}
+
+(npu_chip_info_hbm_used_memory{pod_name=""} /npu_chip_info_hbm_total_memory{pod_name=""} *100) *on (pod) group_left(node) kube_pod_info{node="$node"}
+
+kubectl get pvc -n monitoring | grep prometheus | awk '{print $1}' | xargs kubectl delete pvc -n monitoring
+
+
+
+mpirun -np 2 -H a100-44,a100-43 \
+--allow-run-as-root  \
+--output-filename log_output \
+--merge-stderr-to-stdout \
+--mca mpi_debug 1 \
+-x NCCL_IB_GID_INDEX=3 \
+-x NCCL_DEBUG=INFO \
+-x NCCL_IB_HCA=mlx5_0,mlx5_1,mlx5_2,mlx5_3,mlx5_4,mlx5_5,mlx5_6,mlx5_7 \
+./all_reduce_perf -b 512M -e 16G  -f 2 -g 8 
+
+
+
+mpirun -np 2 -H a100-44,a100-43  --allow-run-as-root -bind-to none -map-by slot -mca coll_hcoll_enable 0 -mca pml ob1 -mca btl_tcp_if_include  bond0 -mca btl ^openib -x NCCL_IB_GID_INDEX=3 -x NCCL_SOCKET_IFNAME=bond0  -x NCCL_IB_HCA=^mlx5_8 -x NCCL_IB_TC=128 -x NCCL_IB_QPS_PER_CONNECTION=8 -x NCCL_DEBUG=INFO -x NCCL_ALGO=Ring ./all_reduce_perf -b 32M -e 8G  -f 2 -g 8
+
+mpirun -np 2 -H 10.1.30.2,10.1.30.1  --allow-run-as-root -bind-to none -map-by slot -mca coll_hcoll_enable 0 -mca pml ob1 -mca btl_tcp_if_include  bond0 -mca btl ^openib -x NCCL_IB_GID_INDEX=3 -x NCCL_SOCKET_IFNAME=bond0  -x NCCL_IB_HCA=^mlx5_8 -x NCCL_IB_TC=128 -x NCCL_IB_QPS_PER_CONNECTION=8 -x NCCL_DEBUG=INFO -x NCCL_ALGO=Ring ./all_reduce_perf -b 32M -e 8G  -f 2 -g 8
+
+mpirun -np 2 -H a100-44,a100-43  --allow-run-as-root -bind-to none -map-by slot -mca coll_hcoll_enable 0 -mca pml ob1 -mca btl_tcp_if_include  bond0 -mca btl ^openib -x NCCL_IB_GID_INDEX=3 -x NCCL_SOCKET_IFNAME=bond0  -x NCCL_IB_HCA=^mlx5_8 -x NCCL_IB_TC=128 -x NCCL_IB_QPS_PER_CONNECTION=8 -x NCCL_DEBUG=INFO -x NCCL_ALGO=Ring ./all_reduce_perf -b 32M -e 8G  -f 2 -g 8

@@ -13,6 +13,8 @@
 
 2. nccl 安装
 
+   安装地址：https://developer.nvidia.com/nccl/nccl-download
+
    ```bash
    Network Installer for Ubuntu22.04
 

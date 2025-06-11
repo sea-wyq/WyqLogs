@@ -133,7 +133,7 @@ npu-smi info 命令显示device正在被使用。
 
 错误 `dcmi model initialized failed, because the device is used. ret is -8020`
 
-![alt text](image.png)
+![image-2025-06-11](https://fourt-wyq.oss-cn-shanghai.aliyuncs.com/images/image-2025-06-11.png)
 
 https://www.hiascend.com/document/detail/zh/Atlas%20200I%20A2/24.1.RC3/ep/installationguide/Install_99.html
 

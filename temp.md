@@ -1,23 +1,15 @@
 
-
 10.94 后台管理网站和账号密码
 
-https://10.0.200.100
-systemtest@vsphere.local
+<https://10.0.200.100>
+<systemtest@vsphere.local>
 System@323
-
-
-
-
 
 纪律要求/价值观践行：
 
-
 严守公司制度，始终遵循开发流程规范。
 
-
 业绩经历：
-
 
 主导类脑云平台可观测性方案设计：
     1. 完成监控指标完善；
@@ -41,13 +33,8 @@ System@323
     4. 38所项目：MindSpore/DeepSpeed/ColossalAI等框架基于npu环境构建演示示例。
     5. 新疆项目：服务器性能测试（基于大模型训练进行评估）。
 
-
-
-
-
 项目经验要求
 作为公司一般项目负责人完成至少3个公司一般项目，并取得预期成果，产出相应技术文档。
-
 
 岗位专业知识要求
 1、基础知识：熟悉主要计算机相关网络、存储、内存等原理，能够通过合理设计集成不同模块的优点，解决一些系统问题。
@@ -58,12 +45,13 @@ System@323
 系统知识：
 
 针对不同计算卡服务器，通过容器化部署不同的监控exporter来增加，或者定制化exporter对应计算卡的监控能力。
-针对不同的device-plugin 完成对不同资源设备的纳管 
+针对不同的device-plugin 完成对不同资源设备的纳管
 针对不同sci组件，完成对不同存储服务的支持。
 
 岗位技能要求
+
 1. 技术调研：能够围绕产品/项目需求对模块的方案有调研能力，并形成系统性的调研文档，调研结论对技术规划和方案设计具有指导意义并取得成果，至少2次。
-2.设计能力：能够根据业务需求和场景特点，并考虑当前技术成熟度，主导技术模块中的技术方案设计（存储/网络/效率等），在业务实际场景中证明取得至少2次成效。 
+2.设计能力：能够根据业务需求和场景特点，并考虑当前技术成熟度，主导技术模块中的技术方案设计（存储/网络/效率等），在业务实际场景中证明取得至少2次成效。
 3.代码能力：能够在遵循代码规范要求，开展有效代码评审基础上，主导基本模块的按时、高质量的代码实现；能够及时发现并解决开发过程中的代码问题，代码评审记录10次。
 4.实践能力：能够在开展有效实验方案和代码评审基础上，针对技术模块的一般问题，独立进行实验设计，对实验结果科学分析提出并改进思路，在规定的资源内完成预设的目标，至少3次。
 
@@ -79,13 +67,6 @@ DeepSpeed，ColossalAI 大模型框架调研和落地方案设计
 与同事间友好沟通，构建舒适的工作氛围。
 
 努力输出技术方案，与部门同事共同进步。
-
-
-
-
-
-
-
 
  labels:
     job-type.system.hero.ai: TrainingJob
@@ -108,8 +89,6 @@ DeepSpeed，ColossalAI 大模型框架调研和落地方案设计
     volcano.sh/queue-name: default
     volcano.sh/task-spec: worker
 
-
-
 经过验证trainingjob得label会直接传递到podlabel上面。
 
 监控指标存储 : 提供多方面指标（cpu、内存、网络、gpu等）的数据采集，并按照时间维度进行指标存储，支持用户监控指标查询功能。
@@ -119,11 +98,7 @@ DeepSpeed，ColossalAI 大模型框架调研和落地方案设计
 告警与通知： 提供监控指标设置和告警功能配置，支持用户使用监控告警策略设置，接收告警通知设置。
 事件采集与管理：提供集群事件存储和管理，支持用户使用事件查看功能。
 
-
 npu_chip_info_utilization *on ( vdie_id) group_left npu_container_info{pod_name="nb-a15802149899595776962049-a15802149899595776962049-0"}
-
-
-
 
 roce 网络容器化
 
@@ -134,7 +109,6 @@ rdma-shared-dev-plugin + multus-cni
 所以不通过下发pod挂载整个计算节点的资源进行测试，而是通常ssh接口来进行访问。
 
 但仍存在问题，mpirun 命令要求节点ssh免密登录
-
 
 不管使用不使用pod，进行通信库测试都需要使用gpu显存，这会影响用户的使用体验。
 
@@ -149,7 +123,6 @@ rdma-shared-dev-plugin + multus-cni
 设计一个daemenset服务，这对节点资源做健康检查，那如何进行多节点的通信验证?
 
 异常检测可以通过告警进行设置的可以通过告警进行触发，无法通过告警进行配置触发的可以通过定时任务进行触发。
-
 
 dcgm-exporter 镜像本身就存在
 
@@ -169,15 +142,11 @@ GPU 掉卡检查
 
 定期使用mount命令检查存储挂载点的状态，确保挂载点已正确挂载且可读写。同时，通过尝试读取和写入测试文件来验证存储的可用性。例如，在挂载点下创建一个临时文件并写入数据，然后读取该文件，检查数据是否一致。若挂载点未挂载或读写操作失败，则判定存储挂载存在问题。
 
-
-
 npu_chip_info_temperature{pod_name=""} *on (pod) group_left(node) kube_pod_info{node="$node"}
 
-(npu_chip_info_hbm_used_memory{pod_name=""} /npu_chip_info_hbm_total_memory{pod_name=""} *100) *on (pod) group_left(node) kube_pod_info{node="$node"}
+(npu_chip_info_hbm_used_memory{pod_name=""} /npu_chip_info_hbm_total_memory{pod_name=""} *100)*on (pod) group_left(node) kube_pod_info{node="$node"}
 
 kubectl get pvc -n monitoring | grep prometheus | awk '{print $1}' | xargs kubectl delete pvc -n monitoring
-
-
 
 mpirun -np 2 -H a100-44,a100-43 \
 --allow-run-as-root  \
@@ -187,9 +156,7 @@ mpirun -np 2 -H a100-44,a100-43 \
 -x NCCL_IB_GID_INDEX=3 \
 -x NCCL_DEBUG=INFO \
 -x NCCL_IB_HCA=mlx5_0,mlx5_1,mlx5_2,mlx5_3,mlx5_4,mlx5_5,mlx5_6,mlx5_7 \
-./all_reduce_perf -b 512M -e 16G  -f 2 -g 8 
-
-
+./all_reduce_perf -b 512M -e 16G  -f 2 -g 8
 
 mpirun -np 2 -H a100-44,a100-43  --allow-run-as-root -bind-to none -map-by slot -mca coll_hcoll_enable 0 -mca pml ob1 -mca btl_tcp_if_include  bond0 -mca btl ^openib -x NCCL_IB_GID_INDEX=3 -x NCCL_SOCKET_IFNAME=bond0  -x NCCL_IB_HCA=^mlx5_8 -x NCCL_IB_TC=128 -x NCCL_IB_QPS_PER_CONNECTION=8 -x NCCL_DEBUG=INFO -x NCCL_ALGO=Ring ./all_reduce_perf -b 32M -e 8G  -f 2 -g 8
 
@@ -197,13 +164,11 @@ mpirun -np 2 -H 10.1.30.2,10.1.30.1  --allow-run-as-root -bind-to none -map-by s
 
 mpirun -np 2 -H a100-44,a100-43  --allow-run-as-root -bind-to none -map-by slot -mca coll_hcoll_enable 0 -mca pml ob1 -mca btl_tcp_if_include  bond0 -mca btl ^openib -x NCCL_IB_GID_INDEX=3 -x NCCL_SOCKET_IFNAME=bond0  -x NCCL_IB_HCA=^mlx5_8 -x NCCL_IB_TC=128 -x NCCL_IB_QPS_PER_CONNECTION=8 -x NCCL_DEBUG=INFO -x NCCL_ALGO=Ring ./all_reduce_perf -b 32M -e 8G  -f 2 -g 8
 
-
 针对方案总涉及的很多验证想和需求点，可用通过表格的形式来呈现。
-
 
 deep research
 
-rag 
+rag
 
 1. 文档解析阶段
 
@@ -212,7 +177,6 @@ rag
 milvus 向量数据块。
 
 2. embdding 阶段
-
 
 3. rerank 阶段
 topk
@@ -225,10 +189,6 @@ topk
 油气
 贵金属
 稀土
-
-
-
-
 
 先考虑设计，讨论方案，再考虑执行，结果不达预期要给他反馈，继续讨论。
 

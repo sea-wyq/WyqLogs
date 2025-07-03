@@ -28,10 +28,6 @@ picGo   图床 + 阿里云对象存储
 ![image](https://fourt-wyq.oss-cn-shanghai.aliyun.com/images/image.png)
 ![image-1](https://fourt-wyq.oss-cn-shanghai.aliyun.com/images/image-1.png)
 
-ak sk
-LTAI5tPmaqi7axyfkvRLEweg
-Z0UmgQMNnSSuhwvm4YuehteybKu33Y
-
 VScode如何Debug(调试)进入标准库文件 第三方包源码
 ![image-2](https://fourt-wyq.oss-cn-shanghai.aliyun.com/images/image-2.png)
 在launch.json文件中配置 "justMyCode": false。这个选项默认是true，是进不了第三方包源码的，所以要改成false。

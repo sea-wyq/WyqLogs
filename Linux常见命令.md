@@ -40,7 +40,7 @@ watch -n 1 nvidia-smi
 ```bash
 From registry.cnbita.com:5000/golangci/golang:1.21
 
-ENV GITLAB_ACCESS_TOKEN=glpat-tHq83KgdpmJDSs9Cq5FC
+ENV GITLAB_ACCESS_TOKEN=********
 
 RUN echo "machine gitlab.bitahub.com login oauth2accesstoken password ${GITLAB_ACCESS_TOKEN}" > ~/.netrc
 
@@ -159,4 +159,133 @@ conda config --set show_channel_urls yes
 
 ```bash
 eclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+```
+
+## find 路径 -name 文件名    在指定路径下按照文件名寻找文件
+
+```bash
+find / -name .bashrc                     #在根目录下寻找.bashrc文件
+```
+
+## SCP 通过 SSH 协议安全地将文件复制到远程系统和从远程系统复制文件到本地
+
+```bash
+scp network-snapshot-001600.pkl yqwu18@172.31.94.45:/home/yqwu18/hucheng_s61948944  #复制文件
+scp -r models/ yqwu18@172.31.94.45:/home/yqwu18/hucheng_s61948944  #复制文件夹
+
+-C - 这会在复制过程中压缩文件或目录。
+-P - 如果默认 SSH 端口不是 22，则使用此选项指定 SSH 端口。
+-r - 此选项递归复制目录及其内容。
+-p - 保留文件的访问和修改时间。
+```
+
+## 查看系统目录的空间占用
+
+```bash
+dh -h   
+```
+
+## 修改文件权限
+
+```bash
+chown 777 -R models/     #递归修改文件夹的权限
+chmod +x  文件名          # 给文件添加执行权限
+```
+
+## 查看端口是否占用
+
+```bash
+lsof -i:端口号
+```
+
+查看文档的行数
+
+```bash
+ wc 文件名                     # 方法1
+ cat 文件名 | grep -c ""       # 方法2
+```
+
+## 查看当下目录的所占内存
+
+```bash
+du -sh
+```
+
+## 查看文件所占用的内存
+
+```bash
+du -sh file  
+```
+
+## 查看文件大小
+
+```bash
+wc -c 文件名
+```
+
+## MD5加密算法
+
+```bash
+md5sum models.tar.gz
+```
+
+## 通过域名查找ip地址
+
+```bash
+nslookup 域名
+```
+
+## 查看linux系统的版本是ubunut还是centos
+
+```bash
+cat /etc/os-release
+```
+
+## 查看系统架构
+
+```bash
+arch
+```
+
+## 获取主机IP
+
+```bash
+hostname -I
+```
+
+## linux换源
+
+```bash
+sudo vim /etc/apt/sources.list
+deb <https://mirrors.ustc.edu.cn/ubuntu/> focal main restricted universe multiverse
+deb-src <https://mirrors.ustc.edu.cn/ubuntu/> focal main restricted universe multiverse
+deb <https://mirrors.ustc.edu.cn/ubuntu/> focal-updates main restricted universe multiverse
+deb-src <https://mirrors.ustc.edu.cn/ubuntu/> focal-updates main restricted universe multiverse
+deb <https://mirrors.ustc.edu.cn/ubuntu/> focal-backports main restricted universe multiverse
+deb-src <https://mirrors.ustc.edu.cn/ubuntu/> focal-backports main restricted universe multiverse
+deb <https://mirrors.ustc.edu.cn/ubuntu/> focal-security main restricted universe multiverse
+deb-src <https://mirrors.ustc.edu.cn/ubuntu/> focal-security main restricted universe multiverse
+deb <https://mirrors.ustc.edu.cn/ubuntu/> focal-proposed main restricted universe multiverse
+deb-src <https://mirrors.ustc.edu.cn/ubuntu/> focal-proposed main restricted universe multiverse
+```
+
+## 运行sh脚本提示syntax error unexpected end of file
+
+vim 打开文件，输入:set ff=unix
+
+## 修改系统变量
+
+1、在/etc/profile文件中添加变量【对所有用户生效（永久的）】
+2、在用户目录下的.bash_profile文件中增加变量【对单一用户生效（永久的）】
+3、直接运行export命令定义变量【只对当前shell（BASH）有效（临时的）】
+
+## 模拟系统负载较高时的场景
+
+```bash
+sudo apt install stress
+
+消耗 CPU 资源
+$ stress -c 4
+消耗内存资源
+$ stress --vm 2 --vm-bytes 300M --vm-keep
 ```

@@ -1,5 +1,4 @@
 
-
 ## MindSpore框架进行分布式训练任务演示示例
 
 该演示示例，是基于MNIST数据集完成手写数字分类任务。
@@ -7,10 +6,12 @@
 ## 环境准备
 
 **镜像：**
+
 ```bash
 swr.cn-south-1.myhuaweicloud.com/ascendhub/ascend-mindspore:24.0.RC1-A1-ubuntu20.04
 ```
-针对同的服务器环境，可以参考mindspore 官方镜像地址：https://www.hiascend.com/developer/ascendhub/detail/9de02a1a179b4018a4bf8e50c6c2339e
+
+针对同的服务器环境，可以参考mindspore 官方镜像地址：<https://www.hiascend.com/developer/ascendhub/detail/9de02a1a179b4018a4bf8e50c6c2339e>
 
 **服务器环境：**
 
@@ -18,7 +19,6 @@ swr.cn-south-1.myhuaweicloud.com/ascendhub/ascend-mindspore:24.0.RC1-A1-ubuntu20
 - npu 驱动版本： 24.1.0
 - cann 版本： 8
 - npu显卡型号： 910B3
-
 
 **训练脚本：**
 
@@ -102,10 +102,10 @@ for epoch in range(10):
 
 ```
 
-
 ## 单机多卡分布式训练
 
 平台使用流程如下图：
+
 1. 选择算法设计-分布式训练功能栏。
 2. 填写任务名称并选择平台镜像，（下方提供的示例脚本，已经提前写入截图中所展示的平台镜像中，也可自行挂载示例代码。）
 3. 根据选择的多卡套餐，填写并修改分布式训练命令，
@@ -120,12 +120,9 @@ export DATA_PATH=/home/MNIST_Data/train/
 mpirun -n 4 --allow-run-as-root --output-filename log_output --merge-stderr-to-stdout python train_ddp.py
 ```
 
-
 点击确认后，等待训练结果如下：
 
 ![image-2-2025-05-07](https://fourt-wyq.oss-cn-shanghai.aliyuncs.com/images/image-2-2025-05-07.png)
-
-
 
 **遇到的问题**：
 
@@ -135,7 +132,4 @@ npu-smi info 命令显示device正在被使用。
 
 ![image-2025-06-11](https://fourt-wyq.oss-cn-shanghai.aliyuncs.com/images/image-2025-06-11.png)
 
-https://www.hiascend.com/document/detail/zh/Atlas%20200I%20A2/24.1.RC3/ep/installationguide/Install_99.html
-
-
-
+<https://www.hiascend.com/document/detail/zh/Atlas%20200I%20A2/24.1.RC3/ep/installationguide/Install_99.html>

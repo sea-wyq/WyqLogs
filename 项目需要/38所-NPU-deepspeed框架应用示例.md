@@ -1,5 +1,5 @@
 
-实验镜像构建：
+实验镜像构建
 
 ```bash
 FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.1.rc1-910b-ubuntu22.04-py3.10
@@ -11,7 +11,6 @@ RUN pip3 install torch==2.2.0 torchvision torch_npu==2.2.0  tensorboard deepspee
 
 ADD ./train/ /home/train/
 ```
-
 
 ```bash
 FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/ascend-pytorch:24.0.0-A1-2.1.0-ubuntu20.04
@@ -27,7 +26,6 @@ ADD ./train/ /home/train/
 ```
 
 注：torch和torch_npu的版本需要对应起来，否则会报错。
-
 
 通过docker容器进行训练验证
 
@@ -45,8 +43,6 @@ docker run -it --rm \
     registry.cnbita.com:5000/leinaoyun-arm/deepspeed:0.16-pytorch-npu_2.2 bash 
 ```
 
-
-
 验证npu deepspeed 环境是否可用
 
 >>> import torch
@@ -58,7 +54,6 @@ torch_npu: True ,version: 2.2.0
 >>> from deepspeed.accelerator import get_accelerator
 >>> print('accelerator:', get_accelerator()._name)
 accelerator: npu
-
 
 ```bash
 import argparse
@@ -185,12 +180,12 @@ def main():
 if __name__ == '__main__':
     main()
 ```
+
 export HCCL_LOG_LEVEL=4
 export ASCEND_PROCESS_LOG_PATH=./hccl_logs
 export TORCH_DISTRIBUTED_DEBUG=DETAIL
 
-deepspeed --include localhost:0 train.py 
-
+deepspeed --include localhost:0 train.py
 
 ```bash
 deepspeed --include localhost:0,1 train_dp.py 单机双卡
@@ -209,10 +204,7 @@ epoch=2/10, step=5993, loss=1.0590382814407349
 epoch=2/10, step=5994, loss=1.3112924098968506
 ```
 
-
-参考文档：https://www.deepspeed.ai/tutorials/accelerator-setup-guide/#huawei-ascend-npu
-
-
+参考文档：<https://www.deepspeed.ai/tutorials/accelerator-setup-guide/#huawei-ascend-npu>
 
 在38所环境验证结果如下：
 
@@ -222,8 +214,6 @@ immintrin.h是 Intel 处理器的 SIMD 指令集头文件，ARM 架构（如 aar
 
 使用npu进行训练出现通信算子报错，在更换服务版本和镜像后，结果仍然无法正常训练。
 
-
 但在其它环境验证过，npu deepspeed是可以正常训练，推测可能是38所得npu服务器环境存在问题。
-
 
 Npu 安装的是最新的驱动。

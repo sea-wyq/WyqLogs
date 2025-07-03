@@ -4,14 +4,16 @@ DeepSeek-R1: 基于Ascend 910ProB环境部署并对话
 DeepSeek-R1 是一款由深度求索推出的推理模型，通过引入强化学习（RL）前的冷启动数据训练，有效解决了重复生成、可读性差及多语言混杂等问题。该模型在数学、代码与逻辑推理任务中表现卓越，性能对标 OpenAI-o1。其创新训练框架突破了传统 RL 训练的局限性，为复杂推理任务提供了高效解决方案。
 
 本文以 [DeepSeek-R1-Distill-Qwen-7B](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B) 为例，申请`910ProB`计算卡资源并在`JupyterLab`开发环境中部署模型并进行对话。主要内容包括：
+
 - [DeepSeek-R1: 基于Ascend 910ProB环境部署并对话](#deepseek-r1-基于ascend-910prob环境部署并对话)
   - [1. 创建训练项目](#1-创建训练项目)
   - [2. 创建jupyter任务](#2-创建jupyter任务)
   - [3. 模型部署](#3-模型部署)
 
-
 ## 1. 创建训练项目
+
 在工作台中，创建新的训练任务。
+
 1. 选择训练项目，点击创建训练项目按钮，然后填写项目名称、编程语言和算法框架。
 2. 选择引用的模型，DeepSeek模型在公开模型栏目下。
 3. 查看模型挂载路径，后续推理命令需要指定模型的挂载路径（/model/systemuser/DeepSeek-R1-Distill-Qwen）。
@@ -24,7 +26,9 @@ DeepSeek-R1 是一款由深度求索推出的推理模型，通过引入强化�
 点击创建项目，等待项目创建完成。
 
 ## 2. 创建jupyter任务
+
 进入刚创建的训练项目,选择创建Jupyter任务。
+
 1. 选择jupyter。
 2. 填写镜像，算力套餐和队列。
 
@@ -36,17 +40,20 @@ DeepSeek-R1 是一款由深度求索推出的推理模型，通过引入强化�
 点击确认后，等待开启调试按钮处于可点击状态。
 ![image-7](https://fourt-wyq.oss-cn-shanghai.aliyuncs.com/images/image-7.png)
 
-
 ## 3. 模型部署
+
 部署流程如下：
+
 1. 点击`Terminal`并执行`bash`命令，激活环境并注入环境变量。![image-8](https://fourt-wyq.oss-cn-shanghai.aliyuncs.com/images/image-8.png)
-2. 执行下面推理命令; 
+2. 执行下面推理命令;
+
 ```bash
 python3 -m examples.run_pa \
    --model_path /model/systemuser/DeepSeek-R1-Distill-Qwen \
    --input_text ["中国的四大名著是什么?"] \
    --max_output_length 2048
 ```
+
 - examples.run_pa：推理脚本。
 - model_path：项目模型挂载的目录。
 - input_text：请求的问题文本。

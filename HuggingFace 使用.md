@@ -11,6 +11,7 @@ huggingface-cli download --resume-download unsloth/DeepSeek-R1-BF16 --local-dir 
 类似huggingface 模型下载速度快
 
 **huggingface 脚本下载数据集和模型*
+
 ```bash
 from huggingface_hub import snapshot_download
 

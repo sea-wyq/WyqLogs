@@ -1,6 +1,5 @@
 # 基于Nccl-test进行GPU通信测试
 
-
 如果出现nccl.h找不到，需要安装nccl库。
 
 1. 检查依赖项
@@ -13,7 +12,7 @@
 
 2. nccl 安装
 
-   安装地址：https://developer.nvidia.com/nccl/nccl-download
+   安装地址：<https://developer.nvidia.com/nccl/nccl-download>
 
    ```bash
    Network Installer for Ubuntu22.04
@@ -38,8 +37,6 @@
    For RHEL/Centos: sudo yum install libnccl-2.27.3-1+cuda12.4 libnccl-devel-2.27.3-1+cuda12.4 libnccl-static-2.27.3-1+cuda12.4
 
    ```
-
-
 
 ## 测试示例
 
@@ -109,4 +106,5 @@ mpirun -np 2 -H a100-44,a100-43  --allow-run-as-root -bind-to none -map-by slot 
 ```
 
 ## 参考文档
+
 [nccl-test 使用指引-腾讯云开发者社区-腾讯云](https://cloud.tencent.com/developer/article/2361710)

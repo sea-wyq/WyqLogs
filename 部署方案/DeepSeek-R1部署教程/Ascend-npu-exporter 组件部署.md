@@ -1,4 +1,4 @@
-## npu 监控指标支持
+# npu 监控指标支持
 
 ```bash
 "job_gpu_utilization":     ` npu_chip_info_utilization *on ( vdie_id) group_left npu_container_info{containerName=~".*$2.*"}`,
@@ -20,7 +20,6 @@ kube_pod_container_resource_requests{resource=~"nvidia_com.*|huawei_com.*"}  * o
 kube_node_status_capacity{resource=~"nvidia_com.*|huawei_com.*"}
 
 ```
-
 
 ## 安装部署
 

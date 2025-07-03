@@ -1,7 +1,5 @@
 
-
-
-通过docker容器进行训练验证
+# 通过docker容器进行训练验证
 
 ```bash
 docker run -it --rm \
@@ -17,7 +15,6 @@ docker run -it --rm \
     registry.cnbita.com:5000/leinaoyun-arm/colossalai:0.4.9-pytorch-npu_2.2 bash
 ```
 
-
 实验镜像构建：
 
 ```bash
@@ -27,7 +24,6 @@ ENV ASCEND_HOME_PATH=/usr/local/Ascend/ascend-toolkit/latest
 
 RUN pip3 install torch==2.2.0 torchvision torch_npu==2.2.0  tensorboard colossalai==0.4.9
 ```
-
 
 ```bash
 import argparse
@@ -173,7 +169,6 @@ if __name__ == "__main__":
 
 ```
 
-
 在38所环境验证结果如下：
 
 colossalai命令在真正执行得时候也是通过torchrun 命令去执行脚本得。
@@ -183,8 +178,8 @@ colossalai run --nproc_per_node 1  train.py
                     ||
 torchrun --nproc_per_node=1 --nnodes=1 --node_rank=0 --master_addr=127.0.0.1 --master_port=29500 train.py -c ./ckpt-fp32
 ```
-colossalai官方并没有提供npu训练得相关示例。无法进行验证。
 
+colossalai官方并没有提供npu训练得相关示例。无法进行验证。
 
 colossalai  不支持cpu 运行，必须添加--nproc_per_node参数
 

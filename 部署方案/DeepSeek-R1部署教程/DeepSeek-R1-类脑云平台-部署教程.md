@@ -4,6 +4,7 @@ DeepSeek-R1: 在开发环境部署并对话
 DeepSeek-R1 是一款由深度求索推出的推理模型，通过引入强化学习（RL）前的冷启动数据训练，有效解决了重复生成、可读性差及多语言混杂等问题。该模型在数学、代码与逻辑推理任务中表现卓越，性能对标 OpenAI-o1。其创新训练框架突破了传统 RL 训练的局限性，为复杂推理任务提供了高效解决方案。
 
 本文以 [DeepSeek-R1-Distill-Qwen-7B](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B) 为例，在 JupyterLab 开发环境中部署模型并进行对话。主要内容包括：
+
 - [DeepSeek-R1: 在开发环境部署并对话](#deepseek-r1-在开发环境部署并对话)
   - [1. 下载模型文件](#1-下载模型文件)
   - [2. 上传模型文件](#2-上传模型文件)
@@ -11,7 +12,6 @@ DeepSeek-R1 是一款由深度求索推出的推理模型，通过引入强化�
   - [4. 创建 JupyterLab 开发环境](#4-创建-jupyterlab-开发环境)
   - [5. 准备推理脚本](#5-准备推理脚本)
   - [6. 部署模型并对话](#6-部署模型并对话)
-
 
 ## 1. 下载模型文件
 
@@ -34,7 +34,6 @@ huggingface-cli download --resume-download deepseek-ai/DeepSeek-R1-Distill-Qwen-
 
 </div>
 
-
 <div align="center">
 
 |           **Model**           |                                   **Base Model**                                   |                                   **Download**                                    |
@@ -47,7 +46,6 @@ huggingface-cli download --resume-download deepseek-ai/DeepSeek-R1-Distill-Qwen-
 | DeepSeek-R1-Distill-Llama-70B | [Llama-3.3-70B-Instruct](https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct) | [🤗 HuggingFace](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Llama-70B) |
 
 </div>
-
 
 ## 2. 上传模型文件
 
@@ -69,10 +67,10 @@ huggingface-cli download --resume-download deepseek-ai/DeepSeek-R1-Distill-Qwen-
 
 ![模型列表-2025-03-04](https://fourt-wyq.oss-cn-shanghai.aliyuncs.com/images/模型列表-2025-03-04.jpg)
 
-
 ## 4. 创建 JupyterLab 开发环境
 
 在「模型开发和训练」中，创建新的开发环境。
+
 1. 在「存储挂载」中点击模型，添加上面创建的模型；
 2. 选择支持 JupyterLab 或 SSH 访问的镜像；
 3. 选择 1 GPU 套餐资源；
@@ -208,7 +206,6 @@ if __name__ == "__main__":
         messages.append({"role": "assistant", "content": completion})
 ```
 
-
 ## 6. 部署模型并对话
 
 在 JupyterLab 中打开 Terminal 并进入 `/model/DeepSeek-R1` 目录下，执行 `python3 infer.py` 即可和 DeepSeek-R1 进行对话。
@@ -216,4 +213,3 @@ if __name__ == "__main__":
 > 注：因上述所选的镜像没有安装 `transformers` python 包，需要通过 `pip install transformers` 进行安装。
 
 ![运行脚本并对话-2025-03-04](https://fourt-wyq.oss-cn-shanghai.aliyuncs.com/images/运行脚本并对话-2025-03-04.jpg)
-

@@ -18,6 +18,13 @@ spec:
     image: xj-registry.bitahub.com:5000/autotest0304/nvidia-pytorch:24.01-py3-rdma-nccltest
     imagePullPolicy: IfNotPresent
     name: main
+    resources:
+      requests:
+        cpu: "2"
+        memory: "8Gi"
+      limits:
+        cpu: "4"
+        memory: "16Gi"
     securityContext:
       capabilities:
         add: ["IPC_LOCK"] 

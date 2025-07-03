@@ -1,8 +1,7 @@
 # DeepSeek服务部署
 
-
-
 ## 参考文档
+
 - [手动部署推理服务_AI开发平台ModelArts_华为云](https://support.huaweicloud.com/bestpractice-modelarts/modelarts_ds_infer_0006.html)
 - [服务化接口-MindIE Service开发指南-服务化集成部署-MindIE1.0.RC3开发文档-昇腾社区](https://www.hiascend.com/document/detail/zh/mindie/10RC3/envdeployment/instg/mindie_instg_0006.html)
 - [工具编译-HCCL性能测试工具-训练&推理开发-开发工具-CANN商用版8.0.RC3开发文档-昇腾社区](https://www.hiascend.com/document/detail/zh/canncommercial/80RC3/devaids/devtools/hccltool/HCCLpertest_16_0003.html)
@@ -10,22 +9,27 @@
 - [性能测试-快速开始-MindIE Service开发指南-服务化集成部署-MindIE1.0.0开发文档-昇腾社区](https://www.hiascend.com/document/detail/zh/mindie/100/mindieservice/servicedev/mindie_service0012.html)
 - [MindIE Benchmark](https://www.hiascend.com/document/detail/zh/mindie/100/mindieservice/servicedev/mindie_service0012.html)
 
-## 实验环境 
+## 实验环境
+
 NPU卡
+
 - 910 ProB (更新驱动到24.1.rc3可完成32B 70B 服务部署和推理)
 - 910B2C（所有参数模型都可部署）
 
 镜像
+
 ```bash
 swr.cn-south-1.myhuaweicloud.com/ascendhub/mindie:2.0.T3-800I-A2-py311-openeuler24.03-lts
 swr.cn-south-1.myhuaweicloud.com/ascendhub/mindie:1.0.0-800I-A2-py311-openeuler24.03-lts
 ```
 
 模型权重
+
 - State_Cloud/DeepSeek-R1-Distill-Llama-70B
 - State_Cloud/DeepSeek-R1-Distill-Qwen-32B
 
 模型权重来源：魔乐社区（下载速度比huggingface和魔塔更快）
+
 ```bash
 export HUB_WHITE_LIST_PATHS=/DATA/disk1/DeepSeek-R1-Distill-Qwen-32B
 cat << EOF > down.py
@@ -33,7 +37,9 @@ from openmind_hub import snapshot_download
 snapshot_download(repo_id="State_Cloud/DeepSeek-R1-Distill-Qwen-32B", token="f3b5f3047ee1eec6816cd03405d96b9c74032fb5", repo_type="model",local_dir="/DATA/disk1/DeepSeek-R1-Distill-Qwen-32B",local_dir_use_symlinks=False ,resume_download=True)
 EOF
 ```
+
 ## 启动推理容器
+
 ```bash
 docker run -it -d \
     -p 40000:1025 \  #容器端口映射到宿主机端口
@@ -57,7 +63,9 @@ docker run -it -d \
     -v /home/aicc:/home/aicc \  # 挂载的数据集位置
     69f30d0c15be bash
 ```
+
 或者
+
 ```bash
 docker run -it -d \
     --name wyq-ds \
@@ -89,8 +97,10 @@ docker run -it -d \
     -v /usr/local/sbin:/usr/local/sbin:ro \
     -v /DATA/disk1:/home \    # 数据集挂载路径
     4949ab22a9cb bash
-``` 
+```
+
 ## 服务配置修改
+
 ```bash
 vim  /usr/local/Ascend/mindie/latest/mindie-service/conf/config.json
 
@@ -202,8 +212,11 @@ vim  /usr/local/Ascend/mindie/latest/mindie-service/conf/config.json
     }
 }
 ```
+
 ## 启动推理服务
+
 Api接口模式
+
 ```bash
 # 以下命令需在所有机器上同时执行（多机）
 # 解决权重加载过慢问题
@@ -214,10 +227,13 @@ cd /usr/local/Ascend/mindie/latest/mindie-service/
 ```
 
 脚本推理模式
+
 ```bash
 torchrun --nproc_per_node 8  --master_port 20038   -m examples.run_pa  --model_path /model/systemuser/DS-R1-Distill-Llama-70B --input_text [ --is_chat --max_output_length 128
 ```
+
 接口请求示例
+
 ```bash
 # 服务推理
 curl 127.0.0.1:1025/generate -d '{
@@ -278,17 +294,20 @@ curl -s  http://120.92.208.206:1025/v1/completions \
 }'
 ```
 
-
 查看容器IP
+
 ```bash
 docker inspect wyq-ds | grep IP   # 查看容器IP
 ```
+
 量化脚本如下：BF16 转INT8（W8A8）
+
 ```bash
 python3 quant_llama.py --model_path /home/aicc/70B/deepseek-ai/DeepSeek-R1-Distill-Llama-70B/ --save_directory /home/aicc/70B-W8A8 --calib_file ./home/aicc/msit/msmodelslim/example/common/boolq.jsonl --w_bit 8 --a_bit 8 --device_type npu  
 ```
 
 # 性能测试
+
 使用 mindIE BenchMark 进行性能测试
 
 注：--Concurrency 并发参数设置失效，无法测试不同并发情况。
@@ -311,9 +330,11 @@ benchmark \
 --Tokenizer True \
 --SyntheticConfigPath /usr/local/lib/python3.11/site-packages/mindiebenchmark/config/synthetic_config.json
 ```
+
 使用 vllm benchmarks 测试mindie 推理服务接口
 
 仓库地址：[vllm/benchmarks/benchmark_serving.py](https://github.com/vllm-project/vllm/blob/main/benchmarks/benchmark_serving.py)
+
 ```bash
 python3 benchmarks/benchmark_serving.py \
 --backend vllm \

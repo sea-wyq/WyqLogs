@@ -9,7 +9,6 @@ sudo apt-get install build-essential
 
 ## 安装go环境
 
-
 ```bash
 #  下载安装包
 sudo wget https://golang.google.cn/dl/go1.23.5.linux-amd64.tar.gz
@@ -31,7 +30,6 @@ source /etc/profile
 ```
 
 # 安装miniconda
-
 
 ```bash
 wget https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py311_23.11.0-1-Linux-x86_64.sh

@@ -1,4 +1,6 @@
 
+# 环境安装
+
 ## 安装c++环境
 
 ```bash
@@ -29,7 +31,7 @@ source /etc/profile
 
 ```
 
-# 安装miniconda
+## 安装miniconda
 
 ```bash
 wget https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py311_23.11.0-1-Linux-x86_64.sh

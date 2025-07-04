@@ -1,5 +1,5 @@
 
-**huggingface数据拉取**
+# huggingface数据拉取
 
 ```bash
 pip install -U huggingface_hub
@@ -10,7 +10,7 @@ huggingface-cli download --resume-download unsloth/DeepSeek-R1-BF16 --local-dir 
 [下载接口 | 文档 | 魔乐社区](https://modelers.cn/docs/zh/openmind-hub-client/0.9/api_reference/download_api.html#om-hub-download)
 类似huggingface 模型下载速度快
 
-**huggingface 脚本下载数据集和模型*
+huggingface 脚本下载数据集和模型
 
 ```bash
 from huggingface_hub import snapshot_download
@@ -37,7 +37,7 @@ snapshot_download(
 )
 ```
 
-**脚本下载模型数据集，进程退出重新拉起**
+脚本下载模型数据集，进程退出重新拉起
 
 ```bash
 #!/bin/bash

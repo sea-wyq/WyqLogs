@@ -163,3 +163,25 @@ git clone --branch <标签名> <仓库URL>         # 克隆指定标签的代码
 
 看到界面返回欢迎标语的时候，就说明成功啦。
 至此，你就可以在同一台电脑上，愉快的进行各大平台的代码提交。
+
+## git 大文件上传和版本控制
+
+LFS（Large File Storage）大文件存储用于改善大型二进制文件的处理方式，它通过分离较大的文件和文本差异，使版本控制更加高效。LFS的使用包括：安装Git LFS扩展、配置LFS追踪特定文件类型、提交和推送大文件至GitLab。其中，配置Git LFS追踪文件是关键步骤，这包括编辑.gitattributes文件和指定要追踪的文件类型。
+
+```bash
+curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+sudo apt-get install git-lfs
+git lfs install
+git lfs version
+
+touch .gitattributes
+*.zip filter=lfs diff=lfs merge=lfs -text
+
+git add .gitattributes
+git add your-large-file.zip
+git commit -m "Add LFS tracking for zip files"
+git push origin mAIn
+
+
+git lfs pull
+```

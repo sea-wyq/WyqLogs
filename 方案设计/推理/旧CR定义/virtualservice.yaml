@@ -1,0 +1,129 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  creationTimestamp: "2025-06-01T04:59:44Z"
+  generation: 2
+  name: qwen332b
+  namespace: hero-user
+  ownerReferences:
+  - apiVersion: system.hero.ai/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Application
+    name: a15845501782323200591914
+    uid: 98b129f0-3d90-4bc6-ac8f-960c138da5b4
+  resourceVersion: "694827781"
+  uid: 9cb756a5-0714-45d6-864b-0a1a97baa484
+spec:
+  gateways:
+  - istio-system/global-gateway
+  - mesh
+  hosts:
+  - qwen332b
+  - a15845501782323200591914.10.0.100.210.nip.io
+  http:
+  - corsPolicy:
+      allowHeaders:
+      - '*'
+      allowMethods:
+      - POST
+      - GET
+      - PUT
+      - PATCH
+      - OPTIONS
+      - DELETE
+      allowOrigins:
+      - regex: .*
+    match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: qwen332b
+        subset: a15881160574234624650058
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  creationTimestamp: "2025-06-01T04:59:44Z"
+  generation: 2
+  name: qwen332b
+  namespace: hero-user
+  ownerReferences:
+  - apiVersion: system.hero.ai/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Application
+    name: a15845501782323200591914
+    uid: 98b129f0-3d90-4bc6-ac8f-960c138da5b4
+  resourceVersion: "694827782"
+  uid: fd38227e-8a65-4830-8ad9-2fa9d5e0249f
+spec:
+  host: qwen332b
+  subsets:
+  - labels:
+      version: a15881160574234624650058
+    name: a15881160574234624650058
+    
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2025-06-01T04:59:44Z"
+  labels:
+    app: qwen332b
+  name: qwen332b
+  namespace: hero-user
+  ownerReferences:
+  - apiVersion: system.hero.ai/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Application
+    name: a15845501782323200591914
+    uid: 98b129f0-3d90-4bc6-ac8f-960c138da5b4
+  resourceVersion: "694827785"
+  uid: 6ddc8502-f879-4eaf-b51d-27bd00fd0377
+spec:
+  clusterIP: 10.96.64.86
+  clusterIPs:
+  - 10.96.64.86
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: http
+    port: 9997
+    protocol: TCP
+    targetPort: 9997
+  selector:
+    app: qwen332b
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+
+
+---
+
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  creationTimestamp: "2024-03-12T07:49:10Z"
+  generation: 1
+  name: global-gateway
+  namespace: istio-system
+  resourceVersion: "58223814"
+  uid: 2fa994a2-e1df-47f3-9965-160007027bf1
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - '*'
+    port:
+      name: http
+      number: 80
+      protocol: http

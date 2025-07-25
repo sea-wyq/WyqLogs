@@ -1,0 +1,62 @@
+apiVersion: system.hero.ai/v1alpha1
+kind: ServerlessApp
+metadata:
+#  labels:
+#    app.kubernetes.io/name: serverlessapp
+#    app.kubernetes.io/instance: serverlessapp-sample
+#    app.kubernetes.io/part-of: serverless-app-controller
+#    app.kubernetes.io/managed-by: kustomize
+#    app.kubernetes.io/created-by: serverless-app-controller
+  name: image-describe
+  namespace: heros-user
+spec:
+  scheduler:
+    schedulerName: volcano
+    queue: default
+  autoscaling:
+    maxReplicas: 1
+  server:
+    serverName: image-describe
+    modelType: object-detection   # 暂时是三种 ： object-detection、 image-classification 、customize
+    version: v1
+    template:
+      metadata:
+        labels:
+          app: image-describe
+      spec:
+        containers:
+          - name: image-describe
+            image: registry.cn-hangzhou.aliyuncs.com/ruanxingbaozi/pytorch:image_recognition_demo
+            imagePullPolicy: Always
+            args:
+#              - bash
+#              - -c
+              - bash python image_recognition_server.py
+            ports:
+              - name: http1    #Name must be empty, or one of: 'h2c', 'http1'
+                containerPort: 5000
+            env:
+              - name: DEMO_GREETING
+                value: "Hello from the environment"
+            resources:
+              limits:
+                cpu: "1"
+                memory: 4Gi
+              requests:
+                cpu: "1"
+                memory: 4Gi
+            volumeMounts:
+              - name: test
+                mountPath: /data/b20240312182234882dppeky
+                subPath: data/b20240312182234882dppeky
+          - name: gradio-container    #两个容器
+            imagePullPolicy: Always
+            image: registry.cnbita.com:5000/gradio-ui/gradio-ui:v1
+            ports:
+              - containerPort: 7890
+        volumes:
+          - name: test
+            persistentVolumeClaim:
+              claimName: b20240312182234882dppeky
+
+# 测试：curl -XPOST http://serverlessapp-sample.default.172.20.175.141.sslip.io/describe -F image=@/root/xy/test.png

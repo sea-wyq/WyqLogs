@@ -1,0 +1,445 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    cni.projectcalico.org/containerID: 4aaa42179d2b5fb3e767e68f0bcc8c028535cac988bb8cc1fa9084012169058b
+    cni.projectcalico.org/podIP: 10.244.229.252/32
+    cni.projectcalico.org/podIPs: 10.244.229.252/32
+    istio.io/rev: default
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "",
+          "ips": [
+              "10.244.229.252"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "",
+          "ips": [
+              "10.244.229.252"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    kubectl.kubernetes.io/default-container: a15881166897278976403138
+    kubectl.kubernetes.io/default-logs-container: a15881166897278976403138
+    leinao.ai/storage-managed: "true"
+    prometheus.io/path: /stats/prometheus
+    prometheus.io/port: "15020"
+    prometheus.io/scrape: "true"
+    scheduling.k8s.io/group-name: a15845501782323200591914
+    sidecar.istio.io/status: '{"initContainers":["istio-init"],"containers":["istio-proxy"],"volumes":["workload-socket","credential-socket","workload-certs","istio-envoy","istio-data","istio-podinfo","istio-token","istiod-ca-cert"],"imagePullSecrets":null,"revision":"default"}'
+    volcano.sh/job-name: a15845501782323200591914
+    volcano.sh/job-version: "0"
+    volcano.sh/queue-name: a15165034171985920158934
+    volcano.sh/task-spec: qwen332b-a15881160574234624650058
+    volcano.sh/template-uid: a15845501782323200591914-qwen332b-a15881160574234624650058
+  creationTimestamp: "2025-06-04T08:34:48Z"
+  generateName: qwen332b-a15881160574234624650058-856f4fdddc-
+  labels:
+    app: qwen332b
+    leinao.ai/app-name: a15845501782323200591914
+    leinao.ai/app-version: v1
+    pod-template-hash: 856f4fdddc
+    resourcepool.system.hero.ai: a15165034171985920158934
+    security.istio.io/tlsMode: istio
+    service.istio.io/canonical-name: qwen332b
+    service.istio.io/canonical-revision: a15881160574234624650058
+    sidecar.istio.io/inject: "true"
+    version: a15881160574234624650058
+  name: qwen332b-a15881160574234624650058-856f4fdddc-jvr9t
+  namespace: hero-user
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: qwen332b-a15881160574234624650058-856f4fdddc
+    uid: e97c1926-e1e6-4242-89b7-5aab6823a0bf
+  resourceVersion: "694827937"
+  uid: 17fb60d1-7766-4252-b777-44c4e37a5d9d
+spec:
+  containers:
+  - args:
+    - proxy
+    - sidecar
+    - --domain
+    - $(POD_NAMESPACE).svc.cluster.local
+    - --proxyLogLevel=warning
+    - --proxyComponentLogLevel=misc:error
+    - --log_output_level=default:info
+    env:
+    - name: JWT_POLICY
+      value: third-party-jwt
+    - name: PILOT_CERT_PROVIDER
+      value: istiod
+    - name: CA_ADDR
+      value: istiod.istio-system.svc:15012
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: INSTANCE_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+    - name: SERVICE_ACCOUNT
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.serviceAccountName
+    - name: HOST_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.hostIP
+    - name: ISTIO_CPU_LIMIT
+      valueFrom:
+        resourceFieldRef:
+          divisor: "0"
+          resource: limits.cpu
+    - name: PROXY_CONFIG
+      value: |
+        {"holdApplicationUntilProxyStarts":true}
+    - name: ISTIO_META_POD_PORTS
+      value: |-
+        [
+            {"name":"http","containerPort":9997,"protocol":"TCP"}
+        ]
+    - name: ISTIO_META_APP_CONTAINERS
+      value: a15881166897278976403138
+    - name: GOMEMLIMIT
+      valueFrom:
+        resourceFieldRef:
+          divisor: "0"
+          resource: limits.memory
+    - name: GOMAXPROCS
+      valueFrom:
+        resourceFieldRef:
+          divisor: "0"
+          resource: limits.cpu
+    - name: ISTIO_META_CLUSTER_ID
+      value: Kubernetes
+    - name: ISTIO_META_NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    - name: ISTIO_META_INTERCEPTION_MODE
+      value: REDIRECT
+    - name: ISTIO_META_WORKLOAD_NAME
+      value: qwen332b-a15881160574234624650058
+    - name: ISTIO_META_OWNER
+      value: kubernetes://apis/apps/v1/namespaces/hero-user/deployments/qwen332b-a15881160574234624650058
+    - name: ISTIO_META_MESH_ID
+      value: cluster.local
+    - name: TRUST_DOMAIN
+      value: cluster.local
+    image: registry.cnbita.com:5000/basic/proxyv2:1.19.3
+    imagePullPolicy: IfNotPresent
+    lifecycle:
+      postStart:
+        exec:
+          command:
+          - pilot-agent
+          - wait
+    name: istio-proxy
+    ports:
+    - containerPort: 15090
+      name: http-envoy-prom
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 30
+      httpGet:
+        path: /healthz/ready
+        port: 15021
+        scheme: HTTP
+      initialDelaySeconds: 1
+      periodSeconds: 2
+      successThreshold: 1
+      timeoutSeconds: 3
+    resources:
+      limits:
+        cpu: "2"
+        memory: 1Gi
+      requests:
+        cpu: 10m
+        memory: 40Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsGroup: 1337
+      runAsNonRoot: true
+      runAsUser: 1337
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/workload-spiffe-uds
+      name: workload-socket
+    - mountPath: /var/run/secrets/credential-uds
+      name: credential-socket
+    - mountPath: /var/run/secrets/workload-spiffe-credentials
+      name: workload-certs
+    - mountPath: /var/run/secrets/istio
+      name: istiod-ca-cert
+    - mountPath: /var/lib/istio/data
+      name: istio-data
+    - mountPath: /etc/istio/proxy
+      name: istio-envoy
+    - mountPath: /var/run/secrets/tokens
+      name: istio-token
+    - mountPath: /etc/istio/pod
+      name: istio-podinfo
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-27j5b
+      readOnly: true
+  - args:
+    - xinference-local --host 0.0.0.0 --port 9997
+    command:
+    - sh
+    - -c
+    env:
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+    image: registry.cnbita.com:5000/xianxiaoyue/xinference-gpu-ssh:latest
+    imagePullPolicy: Always
+    name: a15881166897278976403138
+    ports:
+    - containerPort: 9997
+      name: http
+      protocol: TCP
+    resources:
+      limits:
+        cpu: "54"
+        memory: 200Gi
+        nvidia.com/nvidia-rtx-4090-24GB: "4"
+      requests:
+        cpu: "54"
+        memory: 200Gi
+        nvidia.com/nvidia-rtx-4090-24GB: "4"
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /input/LLM/workspace/pretrained
+      name: b20240701172638576gu05ah
+      subPath: workspace/pretrained
+    - mountPath: /dev/shm
+      name: cache-volume
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-27j5b
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: image-secret
+  initContainers:
+  - args:
+    - istio-iptables
+    - -p
+    - "15001"
+    - -z
+    - "15006"
+    - -u
+    - "1337"
+    - -m
+    - REDIRECT
+    - -i
+    - '*'
+    - -x
+    - ""
+    - -b
+    - '*'
+    - -d
+    - 15090,15021,15020
+    - --log_output_level=default:info
+    image: registry.cnbita.com:5000/basic/proxyv2:1.19.3
+    imagePullPolicy: IfNotPresent
+    name: istio-init
+    resources:
+      limits:
+        cpu: "2"
+        memory: 1Gi
+      requests:
+        cpu: 10m
+        memory: 40Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        add:
+        - NET_ADMIN
+        - NET_RAW
+        drop:
+        - ALL
+      privileged: false
+      readOnlyRootFilesystem: false
+      runAsGroup: 0
+      runAsNonRoot: false
+      runAsUser: 0
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-27j5b
+      readOnly: true
+  nodeName: hero-suanfa-4090-93
+  nodeSelector:
+    kubernetes.io/arch: amd64
+    resourcepool.system.hero.ai: a15165034171985920158934
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: volcano
+  securityContext: {}
+  serviceAccount: a15845501782323200591914
+  serviceAccountName: a15845501782323200591914
+  terminationGracePeriodSeconds: 60
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - emptyDir: {}
+    name: workload-socket
+  - emptyDir: {}
+    name: credential-socket
+  - emptyDir: {}
+    name: workload-certs
+  - emptyDir:
+      medium: Memory
+    name: istio-envoy
+  - emptyDir: {}
+    name: istio-data
+  - downwardAPI:
+      defaultMode: 420
+      items:
+      - fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.labels
+        path: labels
+      - fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.annotations
+        path: annotations
+    name: istio-podinfo
+  - name: istio-token
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          audience: istio-ca
+          expirationSeconds: 43200
+          path: istio-token
+  - configMap:
+      defaultMode: 420
+      name: istio-ca-root-cert
+    name: istiod-ca-cert
+  - name: b20240701172638576gu05ah
+    persistentVolumeClaim:
+      claimName: b20240701172638576gu05ah
+  - emptyDir:
+      medium: Memory
+      sizeLimit: 2Gi
+    name: cache-volume
+  - name: kube-api-access-27j5b
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2025-06-04T08:34:49Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2025-06-04T08:34:53Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2025-06-04T08:34:53Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2025-06-04T08:34:48Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://ac8a77e6cf3383a59476bab53354dc9612cf95458dfa034e3965af36ddd47475
+    image: registry.cnbita.com:5000/xianxiaoyue/xinference-gpu-ssh:latest
+    imageID: docker-pullable://registry.cnbita.com:5000/xianxiaoyue/xinference-gpu-ssh@sha256:de4a4029b00ee5c925392384877d41d08dcc729b53abf1baa25d1bbb4a28636c
+    lastState: {}
+    name: a15881166897278976403138
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2025-06-04T08:34:52Z"
+  - containerID: docker://f95defea899a4d727f22f0b65e69ddb2b6d00d6aa9eb0be95dafab56a3ec9e1a
+    image: registry.cnbita.com:5000/basic/proxyv2:1.19.3
+    imageID: docker-pullable://registry.cnbita.com:5000/basic/proxyv2@sha256:e8a17580203af2f258b6239eb8848f985d1c112faae683dbbdcb45f924818466
+    lastState: {}
+    name: istio-proxy
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2025-06-04T08:34:49Z"
+  hostIP: 10.0.100.93
+  initContainerStatuses:
+  - containerID: docker://91360a9cab49c33805201602f8f4401eb4837da75ca8312477f16b7dde326e28
+    image: registry.cnbita.com:5000/basic/proxyv2:1.19.3
+    imageID: docker-pullable://registry.cnbita.com:5000/basic/proxyv2@sha256:e8a17580203af2f258b6239eb8848f985d1c112faae683dbbdcb45f924818466
+    lastState: {}
+    name: istio-init
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: docker://91360a9cab49c33805201602f8f4401eb4837da75ca8312477f16b7dde326e28
+        exitCode: 0
+        finishedAt: "2025-06-04T08:34:49Z"
+        reason: Completed
+        startedAt: "2025-06-04T08:34:49Z"
+  phase: Running
+  podIP: 10.244.229.252
+  podIPs:
+  - ip: 10.244.229.252
+  qosClass: Burstable
+  startTime: "2025-06-04T08:34:48Z"

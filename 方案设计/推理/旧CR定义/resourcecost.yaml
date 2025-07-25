@@ -1,0 +1,117 @@
+apiVersion: system.hero.ai/v1alpha1
+kind: ResourceCost
+metadata:
+  creationTimestamp: "2023-11-21T08:53:54Z"
+  generation: 612
+  name: llm-predict
+  namespace: llm-example
+  ownerReferences:
+    - apiVersion: system.hero.ai/v1alpha1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Application
+      name: llm-predict
+      uid: 9afec31d-a8d2-4d22-92f7-7e7c91a06f34
+  resourceVersion: "8539602"
+  uid: 449dcaf1-dc8c-4e45-8173-ad6ad81619c2
+spec:
+  current: #当前运行的pod
+    pods:
+      llm-predict//llm-predict/v1:    #应用名/应用版本/服务名/服务版本
+        - containerName: llm-predict
+          creatingTime: "2023-11-21T09:00:26Z"  #创建时间
+          name: llm-predict-v1-58cd448c89-jhzbh
+          resource:
+            cpu: "1"
+            memory: 1Gi
+          runningTime: "2023-11-21T09:00:27Z"  #运行时间
+        - containerName: llm-predict
+          creatingTime: "2023-11-21T09:05:54Z"
+          name: llm-predict-v1-58cd448c89-vpxm7
+          resource:
+            cpu: "1"
+            memory: 1Gi
+          runningTime: "2023-11-21T09:06:12Z"
+        - containerName: llm-predict
+          creatingTime: "2023-11-21T09:05:54Z"
+          name: llm-predict-v1-58cd448c89-hr8cl
+          resource:
+            cpu: "1"
+            memory: 1Gi
+            sharedMemory: 64Mi
+          runningTime: "2023-11-21T09:06:14Z"
+status:  #历史的pod 所有的pod
+  pods:
+    llm-predict//llm-predict/v1:  #应用名/应用版本/服务名/服务版本
+      - containerName: llm-predict   #容器名，可以不用关心
+        creatingTime: "2023-11-21T08:57:52Z"   #创建时间
+        name: llm-predict-v1-58cd448c89-t6nw6  #podName
+        resource:
+          cpu: "1"
+          memory: 1Gi
+        runningTime: "2023-11-21T08:57:53Z"  #启动时间
+        stoppedTime: "2023-11-21T08:58:59Z"  #停止时间
+      - containerName: llm-predict
+        creatingTime: "2023-11-21T09:02:22Z"
+        name: llm-predict-v1-58cd448c89-6bgq2
+        resource:
+          cpu: "1"
+          memory: 1Gi
+        runningTime: "2023-11-21T09:02:32Z"
+        stoppedTime: "2023-11-21T09:05:33Z"
+      - containerName: llm-predict
+        creatingTime: "2023-11-21T09:02:22Z"
+        name: llm-predict-v1-58cd448c89-fhxv4
+        resource:
+          cpu: "1"
+          memory: 1Gi
+        runningTime: "2023-11-21T09:02:33Z"
+        stoppedTime: "2023-11-21T09:05:33Z"
+      - containerName: llm-predict
+        creatingTime: "2023-11-21T09:02:22Z"
+        name: llm-predict-v1-58cd448c89-7n2zt
+        resource:
+          cpu: "1"
+          memory: 1Gi
+        runningTime: "2023-11-21T09:02:31Z"
+        stoppedTime: "2023-11-21T09:05:33Z"
+      - containerName: llm-predict
+        creatingTime: "2023-11-21T09:02:38Z"
+        name: llm-predict-v1-58cd448c89-cgksr
+        resource:
+          cpu: "1"
+          memory: 1Gi
+        runningTime: "2023-11-21T09:02:42Z"
+        stoppedTime: "2023-11-21T09:05:33Z"
+      - containerName: llm-predict
+        creatingTime: "2023-11-21T09:05:08Z"
+        name: llm-predict-v1-58cd448c89-xs5cl
+        resource:
+          cpu: "1"
+          memory: 1Gi
+        runningTime: "2023-11-21T09:05:35Z"
+        stoppedTime: "2023-11-21T09:06:09Z"
+      - containerName: llm-predict
+        creatingTime: "2023-11-21T09:05:23Z"
+        name: llm-predict-v1-58cd448c89-cfljd
+        resource:
+          cpu: "1"
+          memory: 1Gi
+        runningTime: "2023-11-21T09:05:37Z"
+        stoppedTime: "2023-11-21T09:06:10Z"
+      - containerName: llm-predict
+        creatingTime: "2023-11-21T09:05:08Z"
+        name: llm-predict-v1-58cd448c89-r2qkj
+        resource:
+          cpu: "1"
+          memory: 1Gi
+        runningTime: "2023-11-21T09:05:37Z"
+        stoppedTime: "2023-11-21T09:06:10Z"
+      - containerName: llm-predict
+        creatingTime: "2023-11-21T09:05:08Z"
+        name: llm-predict-v1-58cd448c89-x7s9x
+        resource:
+          cpu: "1"
+          memory: 1Gi
+        runningTime: "2023-11-21T09:05:38Z"
+        stoppedTime: "2023-11-21T09:06:11Z"

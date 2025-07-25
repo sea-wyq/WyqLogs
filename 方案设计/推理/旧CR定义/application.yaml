@@ -1,0 +1,134 @@
+apiVersion: system.hero.ai/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    job.id: a15881166897147905715294
+  creationTimestamp: "2025-06-01T04:59:44Z"
+  finalizers:
+  - application.leinao.ai/finalizer
+  generation: 8
+  labels:
+    cluster.hero.ai/cluster: a12699239975874560508558
+  name: a15845501782323200591914
+  namespace: hero-user
+  resourceVersion: "694827945"
+  uid: 98b129f0-3d90-4bc6-ac8f-960c138da5b4
+spec:
+  gateway:
+    backend: istio
+    host: a15845501782323200591914
+  scheduler:
+    maxRetry: 2
+    minAvailable: 1
+    queue: a15165034171985920158934
+    schedulerName: volcano
+  servers:
+    qwen332b:
+    - replicas: 1
+      scheduler:
+        queue: default
+      serviceMesh:
+        autoMTLS: true
+        backend: istio
+        ingressGateway: true
+        subRoute:
+          match:
+          - uri:
+              prefix: /
+      template:
+        metadata:
+          annotations:
+            leinao.ai/storage-managed: "true"
+            scheduling.k8s.io/group-name: a15845501782323200591914
+            volcano.sh/job-name: a15845501782323200591914
+            volcano.sh/job-version: "0"
+            volcano.sh/queue-name: a15165034171985920158934
+            volcano.sh/task-spec: qwen332b-a15881160574234624650058
+            volcano.sh/template-uid: a15845501782323200591914-qwen332b-a15881160574234624650058
+          labels:
+            app: qwen332b
+            leinao.ai/app-name: a15845501782323200591914
+            leinao.ai/app-version: v1
+            resourcepool.system.hero.ai: a15165034171985920158934
+            sidecar.istio.io/inject: "true"
+            version: a15881160574234624650058
+        spec:
+          containers:
+          - args:
+            - xinference-local --host 0.0.0.0 --port 9997
+            command:
+            - sh
+            - -c
+            env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            image: registry.cnbita.com:5000/xianxiaoyue/xinference-gpu-ssh:latest
+            imagePullPolicy: Always
+            name: a15881166897278976403138
+            ports:
+            - containerPort: 9997
+              name: http
+              protocol: TCP
+            resources:
+              limits:
+                cpu: "54"
+                memory: 200Gi
+                nvidia.com/nvidia-rtx-4090-24GB: "4"
+              requests:
+                cpu: "54"
+                memory: 200Gi
+                nvidia.com/nvidia-rtx-4090-24GB: "4"
+            volumeMounts:
+            - mountPath: /input/LLM/workspace/pretrained
+              name: b20240701172638576gu05ah
+              subPath: workspace/pretrained
+            - mountPath: /dev/shm
+              name: cache-volume
+          imagePullSecrets:
+          - name: image-secret
+          nodeSelector:
+            kubernetes.io/arch: amd64
+            resourcepool.system.hero.ai: a15165034171985920158934
+          schedulerName: volcano
+          serviceAccountName: a15845501782323200591914
+          terminationGracePeriodSeconds: 60
+          volumes:
+          - name: b20240701172638576gu05ah
+            persistentVolumeClaim:
+              claimName: b20240701172638576gu05ah
+          - emptyDir:
+              medium: Memory
+              sizeLimit: 2Gi
+            name: cache-volume
+      version: a15881160574234624650058
+  serviceMesh:
+    autoMTLS: true
+    backend: istio
+    ingressGateway: true
+  version: v1
+status:
+  availableReplicas: 1
+  availableServers: 1
+  conditions:
+  - lastTransitionTime: "2025-06-01T04:59:45Z"
+    lastUpdateTime: "2025-06-04T08:34:48Z"
+    message: Application is being created
+    reason: Creating
+    status: "True"
+    type: Progressing
+  - lastTransitionTime: "2025-06-01T05:00:26Z"
+    lastUpdateTime: "2025-06-04T08:34:53Z"
+    message: Application is running
+    reason: Running
+    status: "True"
+    type: Available
+  phase: Running
+  replicas: 1
+  serverStates:
+    qwen332b-a15881160574234624650058:
+      availableReplicas: 1
+      pendingDuration: 1710972527
+      phase: Ready
+      replicas: 1

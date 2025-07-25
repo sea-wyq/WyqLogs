@@ -1,0 +1,94 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    serving.knative.dev/creator: system:serviceaccount:hero-system:serverless-app-controller
+    serving.knative.dev/lastModifier: system:serviceaccount:hero-system:serverless-app-controller
+  creationTimestamp: "2024-07-26T05:53:35Z"
+  generation: 1
+  labels:
+    app: a12335292719820800648967
+    networking.knative.dev/visibility: cluster-local
+    resourcepool.system.hero.ai: default
+  name: a12335292719820800648967
+  namespace: hero-user
+  ownerReferences:
+  - apiVersion: system.hero.ai/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ServerlessApp
+    name: a12335292719820800648967
+    uid: ee54e6ad-cbf0-4071-af82-6ae195a3e83d
+  resourceVersion: "149830256"
+  uid: b4ce6d6e-4c9e-4fd9-b776-4c05fbf5e67d
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/max-scale: "1"
+        leinao.ai/storage-managed: "true"
+        scheduling.k8s.io/group-name: a12335292719820800648967
+      creationTimestamp: null
+      name: a12335292719820800648967-v1
+    spec:
+      containerConcurrency: 0
+      containers:
+      - env:
+        - name: REVISION
+          value: v0.0.1
+        - name: MODEL_ID
+          value: kif85e2a28a3854087893a059632b7dbc8/image-classfication
+        - name: TOKEN
+          value: 4d01b0fb5b5a862f3aad278efbc655c85a24ca2e
+        - name: MODEL_TASK_TYPE
+          value: image-classification
+        - name: HF_ENDPOINT
+          value: http://10.0.101.71
+        - name: HF_HUB_DOWNLOAD_TIMEOUT
+          value: "6000"
+        image: registry.cnbita.com:5000/jingxiang/transformers-apis:v1
+        imagePullPolicy: Always
+        name: a12335292719820800648967
+        ports:
+        - containerPort: 5000
+          name: http1
+          protocol: TCP
+        readinessProbe:
+          successThreshold: 1
+          tcpSocket:
+            port: 0
+        resources:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+          requests:
+            cpu: "2"
+            memory: 4Gi
+      enableServiceLinks: false
+      imagePullSecrets:
+      - name: image-secret
+      timeoutSeconds: 300
+  traffic:
+  - latestRevision: true
+    percent: 100
+status:
+  address:
+    url: http://a12335292719820800648967.hero-user.svc.cluster.local
+  conditions:
+  - lastTransitionTime: "2024-07-26T05:53:45Z"
+    status: "True"
+    type: ConfigurationsReady
+  - lastTransitionTime: "2024-07-26T05:53:45Z"
+    status: "True"
+    type: Ready
+  - lastTransitionTime: "2024-07-26T05:53:45Z"
+    status: "True"
+    type: RoutesReady
+  latestCreatedRevisionName: a12335292719820800648967-v1
+  latestReadyRevisionName: a12335292719820800648967-v1
+  observedGeneration: 1
+  traffic:
+  - latestRevision: true
+    percent: 100
+    revisionName: a12335292719820800648967-v1
+  url: http://a12335292719820800648967.hero-user.svc.cluster.local

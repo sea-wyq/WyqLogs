@@ -1,5 +1,6 @@
+# 功能验证
 
-实验镜像构建
+## 实验镜像构建
 
 ```bash
 FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.1.rc1-910b-ubuntu22.04-py3.10
@@ -27,7 +28,7 @@ ADD ./train/ /home/train/
 
 注：torch和torch_npu的版本需要对应起来，否则会报错。
 
-通过docker容器进行训练验证
+## 通过docker容器进行训练验证
 
 ```bash
 docker run -it --rm \
@@ -43,7 +44,7 @@ docker run -it --rm \
     registry.cnbita.com:5000/leinaoyun-arm/deepspeed:0.16-pytorch-npu_2.2 bash 
 ```
 
-验证npu deepspeed 环境是否可用
+## 验证npu deepspeed 环境是否可用
 
 >>> import torch
 >>> print('torch:',torch.__version__)
@@ -205,6 +206,8 @@ epoch=2/10, step=5994, loss=1.3112924098968506
 ```
 
 参考文档：<https://www.deepspeed.ai/tutorials/accelerator-setup-guide/#huawei-ascend-npu>
+
+## 结论
 
 在38所环境验证结果如下：
 

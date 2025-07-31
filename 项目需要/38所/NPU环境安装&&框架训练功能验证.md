@@ -88,15 +88,11 @@ docker run -it --rm \
 
 ## Pyotrch 训练验证
 
-基础镜像：swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.1.rc1-910b-ubuntu22.04-py3.10
-
-```bash
-pip3 install torch==2.1.0  pyyaml setuptools torch-npu==2.1.0.post12
-```
+实验镜像：[Dockerfile](./Dockerfile-Pytorch)
 
 参考链接：<https://gitee.com/ascend/pytorch/releases/tag/v7.0.0-pytorch2.1.0>
 
-验证脚本
+实验脚本
 
 ![验证脚本](./pytorch.py)
 
@@ -126,19 +122,13 @@ pytortch 训练正常
 
 ## MindSpore 训练验证
 
-环境安装
+实验镜像： [Dockerfile](./Dockerfile-Mindspore)
 
-基础镜像：swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.1.rc1-910b-ubuntu22.04-py3.10
+实验脚本：
 
-```bash
-pip3 install download
-pip3 install https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.6.0/MindSpore/unified/aarch64/mindspore-2.6.0-cp310-cp310-linux_aarch64.whl --trusted-host ms-release.obs.cn-north-4.myhuaweicloud.com -i https://repo.huaweicloud.com/repository/pypi/simple
-```
-
-脚本文件
 ![验证脚本](./mindspore.py)
 
-结果：
+实验结果：
 
 ```bash
 root@8ce9e7e867ca:/home# python3 train.py
@@ -186,20 +176,20 @@ Done!
 
 ## DeepSpeed 训练验证
 
-基础镜像：swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.1.rc1-910b-ubuntu22.04-py3.10
+实验镜像：[Dockerfile](./Dockerfile-DeepSpeed)
 
-```bash
-pip3 install torch==2.1.0 pyyaml torch-npu==2.1.0.post12 deepspeed==0.13.3 torchvision==0.16.0
-```
-
-脚本文件
+验证脚本：
 
 ![验证脚本](./deepspeed.py)
 
+验证命令：
+
+```bash
 deepspeed --include localhost:0,1 train.py 单机双卡
 deepspeed --include localhost:0 train.py 单机单卡
+```
 
-结果
+验证结果：
 
 ```bash
 [2025-07-29 08:49:05,492] [INFO] [fused_optimizer.py:345:_update_scale] Reducing dynamic loss scale from 4096.0 to 2048.0
@@ -207,8 +197,6 @@ deepspeed --include localhost:0 train.py 单机单卡
 [2025-07-29 08:49:06,776] [INFO] [timer.py:260:stop] epoch=0/micro_step=2000/global_step=2000, RunningAvgSamplesPerSec=1755.8142279325314, CurrSamplesPerSec=1681.6313929886987, MemAllocated=0.0GB, MaxMemAllocated=0.0GB
 [ 1,  2000] loss:  1.681
 ```
-
-脚本执行正常。
 
 ## Tensorflow 训练验证
 
@@ -341,7 +329,7 @@ python -c "import paddle; paddle.utils.run_check()"
 
 ![验证脚本](./paddlepaddle.py)
 
-python tests/test_LeNet_MNIST.py
+python3 train.py
 
 （完全按照上面流程执行）结果：
 
@@ -353,11 +341,7 @@ python tests/test_LeNet_MNIST.py
 
 ## ColossalAI 训练验证
 
-基础镜像：swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.1.rc1-910b-ubuntu22.04-py3.10
-
-```bash
-pip3 install torch==2.1.0 pyyaml setuptools torch-npu==2.1.0.post12 colossalai==0.4.2 torchvision==0.16.0
-```
+实验镜像构建： [Dockerfile](./Dockerfile-ColossalAI)
 
 脚本文件：
 

@@ -1,11 +1,13 @@
 FROM registry.baidubce.com/device/paddle-npu:cann80RC1-ubuntu20-aarch64-gcc84-py310
 
-RUN git clone https://github.com/PaddlePaddle/PaddleCustomDevice \
-    && cd PaddleCustomDevice/backends/npu \
-    && pip3 install paddlepaddle -i https://www.paddlepaddle.org.cn/packages/nightly/cpu/ \
-    && export WITH_TESTING=OFF \
-    && bash tools/compile.sh \
-    && pip3 install build/dist/paddle_custom_npu-0.0.0-cp310-cp310-linux_aarch64.whl
+WORKDIR /home
+
+RUN git clone https://github.com/PaddlePaddle/PaddleCustomDevice 
+RUN cd PaddleCustomDevice/backends/npu 
+RUN pip3 install paddlepaddle -i https://www.paddlepaddle.org.cn/packages/nightly/cpu/ 
+ENV WITH_TESTING=OFF 
+RUN bash /home/PaddleCustomDevice/backends/npu/tools/compile.sh
+RUN pip3 install /home/PaddleCustomDevice/backends/npu/build/dist/paddle_custom_npu-0.0.0-cp310-cp310-linux_aarch64.whl
 
 
 

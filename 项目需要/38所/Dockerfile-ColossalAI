@@ -1,0 +1,6 @@
+FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.1.rc1-910b-ubuntu22.04-py3.10
+
+RUN apt update && apt install vim -y
+
+RUN pip3 install torch==2.1.0 pyyaml setuptools torch-npu==2.1.0.post12 colossalai==0.4.2 torchvision==0.16.0
+

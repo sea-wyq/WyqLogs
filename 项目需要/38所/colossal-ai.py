@@ -1,40 +1,14 @@
-
-# 通过docker容器进行训练验证
-
-```bash
-docker run -it --rm \
-    --shm-size=10g \
-    --privileged \
-    --device=/dev/davinci_manager \
-    --device=/dev/hisi_hdc \
-    --device=/dev/devmm_svm \
-    --device=/dev/davinci0 \
-    -v /usr/local/Ascend/driver:/usr/local/Ascend/driver:ro \
-    -v /usr/local/sbin:/usr/local/sbin:ro \
-    -v ./train.py:/home/train.py \
-    registry.cnbita.com:5000/leinaoyun-arm/colossalai:0.4.9-pytorch-npu_2.2 bash
-```
-
-实验镜像构建：
-
-```bash
-FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/cann:8.1.rc1-910b-ubuntu22.04-py3.10
-
-ENV ASCEND_HOME_PATH=/usr/local/Ascend/ascend-toolkit/latest 
-
-RUN pip3 install torch==2.2.0 torchvision torch_npu==2.2.0  tensorboard colossalai==0.4.9
-```
-
-```bash
 import argparse
 import os
+import numpy as np
 from pathlib import Path
+import torch
 import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
-from torch.optim import Optimizer
+from torch.optim import Optimizer, Adam
 from torch.optim.lr_scheduler import MultiStepLR
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 
 import colossalai
@@ -42,31 +16,63 @@ from colossalai.booster import Booster
 from colossalai.booster.plugin import GeminiPlugin, LowLevelZeroPlugin, TorchDDPPlugin
 from colossalai.booster.plugin.dp_plugin_base import DPPluginBase
 from colossalai.cluster import DistCoordinator
-from colossalai.nn.optimizer import HybridAdam
+
+# 设置NPU环境变量
+os.environ.setdefault('DISTRIBUTED_BACKEND', 'hccl')
+os.environ.setdefault('ASCEND_SLOG_PRINT_TO_STDOUT', '0')
 
 NUM_EPOCHS = 80
 LEARNING_RATE = 1e-3
 
 
+class SyntheticCIFAR10(Dataset):
+    def __init__(self, num_samples, is_train=True):
+        self.num_samples = num_samples
+        self.is_train = is_train
+        # 生成模拟图像（32x32x3，0-255 uint8，模拟原始图像）
+        self.images = np.random.randint(0, 256, size=(num_samples, 32, 32, 3), dtype=np.uint8)
+        self.labels = np.random.randint(0, 10, size=num_samples)
+        
+        # 变换管道：先转PIL Image，再执行空间变换
+        if is_train:
+            self.transform = transforms.Compose([
+                transforms.ToPILImage(),  # 转为PIL Image，支持Pad等操作
+                transforms.Pad(4),
+                transforms.RandomHorizontalFlip(),
+                transforms.RandomCrop(32),
+                transforms.ToTensor(),  # 转为Tensor (CHW格式)
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # 标准化
+            ])
+        else:
+            self.transform = transforms.Compose([
+                transforms.ToPILImage(),
+                transforms.ToTensor(),
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+            ])
+
+    def __len__(self):
+        return self.num_samples
+
+    def __getitem__(self, idx):
+        image = self.images[idx]  # 形状为(32,32,3)，ndarray
+        label = self.labels[idx]
+        if self.transform:
+            image = self.transform(image)
+        return image, label
+
+
 def build_dataloader(batch_size: int, coordinator: DistCoordinator, plugin: DPPluginBase):
-    transform_train = transforms.Compose(
-        [transforms.Pad(4), transforms.RandomHorizontalFlip(), transforms.RandomCrop(32), transforms.ToTensor()]
-    )
-    transform_test = transforms.ToTensor()
-
-    data_path = os.environ.get("DATA", "./data")
     with coordinator.priority_execution():
-        train_dataset = torchvision.datasets.CIFAR10(
-            root=data_path, train=True, transform=transform_train, download=True
-        )
-        test_dataset = torchvision.datasets.CIFAR10(
-            root=data_path, train=False, transform=transform_test, download=True
-        )
+        train_dataset = SyntheticCIFAR10(num_samples=50000, is_train=True)
+        test_dataset = SyntheticCIFAR10(num_samples=10000, is_train=False)
 
-    train_dataloader = plugin.prepare_dataloader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
-    test_dataloader = plugin.prepare_dataloader(test_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
+    train_dataloader = plugin.prepare_dataloader(
+        train_dataset, batch_size=batch_size, shuffle=True, drop_last=True, pin_memory=True
+    )
+    test_dataloader = plugin.prepare_dataloader(
+        test_dataset, batch_size=batch_size, shuffle=False, drop_last=False, pin_memory=True
+    )
     return train_dataloader, test_dataloader
-
 
 
 def train_epoch(
@@ -81,23 +87,19 @@ def train_epoch(
     model.train()
     with tqdm(train_dataloader, desc=f"Epoch [{epoch + 1}/{NUM_EPOCHS}]", disable=not coordinator.is_master()) as pbar:
         for images, labels in pbar:
-            images = images.cuda()
-            labels = labels.cuda()
-            # Forward pass
+            images = images.npu()
+            labels = labels.npu()
             outputs = model(images)
             loss = criterion(outputs, labels)
 
-            # Backward and optimize
             booster.backward(loss, optimizer)
             optimizer.step()
             optimizer.zero_grad()
 
-            # Print log info
             pbar.set_postfix({"loss": loss.item()})
 
 
 def main():
-
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-p",
@@ -115,11 +117,11 @@ def main():
     )
     args = parser.parse_args()
 
-    if args.interval > 0:
-        Path(args.checkpoint).mkdir(parents=True, exist_ok=True)
-
-    colossalai.launch_from_torch(config={})
+    colossalai.launch_from_torch(backend='hccl')
     coordinator = DistCoordinator()
+
+    if args.interval > 0 and coordinator.is_master():
+        Path(args.checkpoint).mkdir(parents=True, exist_ok=True)
 
     global LEARNING_RATE
     LEARNING_RATE *= coordinator.world_size
@@ -127,12 +129,13 @@ def main():
     booster_kwargs = {}
     if args.plugin == "torch_ddp_fp16":
         booster_kwargs["mixed_precision"] = "fp16"
+
     if args.plugin.startswith("torch_ddp"):
         plugin = TorchDDPPlugin()
     elif args.plugin == "gemini":
-        plugin = GeminiPlugin(initial_scale=2**5)
+        plugin = GeminiPlugin(initial_scale=2**5, device='npu')
     elif args.plugin == "low_level_zero":
-        plugin = LowLevelZeroPlugin(initial_scale=2**5)
+        plugin = LowLevelZeroPlugin(initial_scale=2**5, device='npu')
 
     booster = Booster(plugin=plugin, **booster_kwargs)
 
@@ -140,7 +143,7 @@ def main():
 
     model = torchvision.models.resnet18(num_classes=10)
     criterion = nn.CrossEntropyLoss()
-    optimizer = HybridAdam(model.parameters(), lr=LEARNING_RATE)
+    optimizer = Adam(model.parameters(), lr=LEARNING_RATE)
     lr_scheduler = MultiStepLR(optimizer, milestones=[20, 40, 60, 80], gamma=1 / 3)
 
     model, optimizer, criterion, _, lr_scheduler = booster.boost(
@@ -152,13 +155,12 @@ def main():
         booster.load_optimizer(optimizer, f"{args.checkpoint}/optimizer_{args.resume}.pth")
         booster.load_lr_scheduler(lr_scheduler, f"{args.checkpoint}/lr_scheduler_{args.resume}.pth")
 
-
     start_epoch = args.resume if args.resume >= 0 else 0
     for epoch in range(start_epoch, NUM_EPOCHS):
         train_epoch(epoch, model, optimizer, criterion, train_dataloader, booster, coordinator)
         lr_scheduler.step()
 
-        if args.interval > 0 and (epoch + 1) % args.interval == 0:
+        if args.interval > 0 and (epoch + 1) % args.interval == 0 and coordinator.is_master():
             booster.save_model(model, f"{args.checkpoint}/model_{epoch + 1}.pth")
             booster.save_optimizer(optimizer, f"{args.checkpoint}/optimizer_{epoch + 1}.pth")
             booster.save_lr_scheduler(lr_scheduler, f"{args.checkpoint}/lr_scheduler_{epoch + 1}.pth")
@@ -166,21 +168,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-```
-
-在38所环境验证结果如下：
-
-colossalai命令在真正执行得时候也是通过torchrun 命令去执行脚本得。
-
-```bash
-colossalai run --nproc_per_node 1  train.py
-                    ||
-torchrun --nproc_per_node=1 --nnodes=1 --node_rank=0 --master_addr=127.0.0.1 --master_port=29500 train.py -c ./ckpt-fp32
-```
-
-colossalai官方并没有提供npu训练得相关示例。无法进行验证。
-
-colossalai  不支持cpu 运行，必须添加--nproc_per_node参数
-
-Npu安装的是最新的驱动。

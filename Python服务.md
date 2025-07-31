@@ -4,7 +4,7 @@
 
 ```bash
 python -m pip install --upgrade pip   // 更新pip
-pip3 config set global.index-url <https://pypi.mirrors.ustc.edu.cn/simple/>
+pip3 config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
 pip3 config set global.index-url <https://pypi.tuna.tsinghua.edu.cn/simple>
 ```
 

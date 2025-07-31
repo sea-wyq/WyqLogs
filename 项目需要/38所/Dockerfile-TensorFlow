@@ -1,0 +1,5 @@
+FROM swr.cn-south-1.myhuaweicloud.com/ascendhub/ascend-tensorflow:24.0.RC1-A1-ubuntu20.04
+
+RUN wget https://gitee.com/ascend/tensorflow/releases/download/tfa_v0.0.36_8.1.RC1/npu_device-2.6.5-py3-none-manylinux2014_aarch64.whl \
+    && pip3 install npu_device-2.6.5-py3-none-manylinux2014_aarch64.whl
+

@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vllm-cluster
+spec:
+  serviceName: "vllm-internal"
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      nodeName: system-test-100-16-gpu-3090
+      containers:
+      - name: vllm
+        image: registry.cnbita.com:5000/lgy/sglang/sglang:v0.4.4.post1-cu124
+        env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: INTERNAL_SERVICE
+            value: "vllm-internal"
+          - name: LWS_GROUP_SIZE  # 总节点数
+            value: "2"
+          - name: DIST_INIT_PORT  # 分布式初始化端口
+            value: "20000"
+          - name: SERVING_PORT  # 服务端口
+            value: "18000"
+        command:
+          - sh
+          - -c
+          - |
+            POD_ORDINAL=$(echo "$POD_NAME" | awk -F'-' '{print $NF}')
+            
+            if ! [[ "$POD_ORDINAL" =~ ^[0-9]+$ ]]; then
+              echo "Error: 无法从Pod名称提取有效序号，POD_NAME=$POD_NAME"
+              exit 1
+            fi
+            
+            export LWS_LEADER_ADDRESS="vllm-cluster-0.$INTERNAL_SERVICE"
+            export LWS_WORKER_INDEX=$POD_ORDINAL
+                        
+            python3 -m sglang.launch_server \
+              --model-path /model/meta-llama/Llama-3.2-1B-Instruct/ \
+              --served-model-name Llama-3.2-1B-Instruct \
+              --tp 2 \
+              --dist-init-addr "$LWS_LEADER_ADDRESS:$DIST_INIT_PORT" \
+              --nnodes $LWS_GROUP_SIZE \
+              --node-rank $LWS_WORKER_INDEX \
+              --trust-remote-code \
+              $(if [ $POD_ORDINAL -eq 0 ]; then echo "--host 0.0.0.0 --port $SERVING_PORT"; fi)
+        resources:
+          limits:
+            nvidia.com/nvidia-rtx-3090-24GB: "2"
+          requests:
+            nvidia.com/nvidia-rtx-3090-24GB: "2"
+        ports:
+          - containerPort: 18000  # sglang服务端口
+          - containerPort: 20000  # 分布式初始化端口
+        volumeMounts:
+          - name: dshm
+            mountPath: /dev/shm
+          - name: serving-script
+            mountPath: /custom-scripts/run.sh
+          - name: model-volume
+            mountPath: /model/meta-llama/Llama-3.2-1B-Instruct
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 15Gi
+        - name: serving-script
+          hostPath:
+            path: /root/wyq/statefulset/run.sh
+            type: File
+        - name: model-volume
+          hostPath:
+            path: /root/wyq/model
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-internal
+spec:
+  clusterIP: None
+  selector:
+    app: vllm
+  ports:
+    - port: 20000
+      name: dist-init
+    - port: 18000
+      name: serving
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-api
+spec:
+  selector:
+    app: vllm
+    controller.kubernetes.io/pod-index: "0"
+  ports:
+    - port: 80
+      targetPort: 18000  # 映射到leader的sglang服务端口
+  type: ClusterIP

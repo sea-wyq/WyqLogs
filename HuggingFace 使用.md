@@ -4,7 +4,7 @@
 ```bash
 pip install -U huggingface_hub
 export HF_ENDPOINT=https://hf-mirror.com 
-huggingface-cli download --resume-download unsloth/DeepSeek-R1-BF16 --local-dir /model
+huggingface-cli download --resume-download meta-llama/Meta-Llama-3-8B-Instruct --local-dir /Users/wuyiqiang/model
 ```
 
 [下载接口 | 文档 | 魔乐社区](https://modelers.cn/docs/zh/openmind-hub-client/0.9/api_reference/download_api.html#om-hub-download)
@@ -13,13 +13,13 @@ huggingface-cli download --resume-download unsloth/DeepSeek-R1-BF16 --local-dir 
 huggingface 脚本下载数据集和模型
 
 ```bash
-from huggingface_hub import snapshot_download
+from openmind_hub import snapshot_download
 
 # 模型下载
 snapshot_download(
-    "unsloth/DeepSeek-R1-BF16",
+    "AI-Research/Llama-3.2-1B-Instruct",
     revision="main",
-    local_dir="/model",
+    local_dir="/Users/wuyiqiang/model",
     local_dir_use_symlinks=False,
     max_workers=8,
     allow_patterns=["*.safetensors", "*.json", "*.py"],

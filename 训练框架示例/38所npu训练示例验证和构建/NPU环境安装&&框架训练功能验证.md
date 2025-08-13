@@ -260,6 +260,8 @@ deepspeed --include localhost:0 train.py 单机单卡
 
 ## PaddlePaddle 训练验证
 
+以容器保存为镜像构建镜像: [Dockerfile](./Dockerfile-PaddlePaddle)
+
 PaddleCustomDevice 适配了很多厂商的卡
 
 PaddleCustomDevice 2.6分支 支持910A芯片
@@ -376,8 +378,10 @@ Epoch [2/80]:   8%|▊         | 20/250 [00:02<00:25,  8.95it/s, loss=1.38]
 | DeepSpeed    | 基于当前环境可以训练                   |
 | TensorFlow   | 基于当前环境可以训练，存在版本限制       |
 | PaddlePaddle | 基于当前环境可以训练                   |
-| Caffe        | 无法训练                               |
-| ColossalAI   | 基于当前环境可以训练                    |
+| Caffe        | 无法训练                             |
+| ColossalAI   | 基于当前环境可以训练                   |
+
+镜像列表
 
 172.16.147.11:5000/training/pytorch2.1:8.1.rc1-910b-ubuntu22.04-py3.10
 172.16.147.11:5000/training/tensorflow2.6.5:8.1.rc1-910b

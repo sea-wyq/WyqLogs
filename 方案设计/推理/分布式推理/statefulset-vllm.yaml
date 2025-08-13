@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vllm-cluster
+spec:
+  serviceName: "vllm-internal"
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      nodeName: system-test-100-16-gpu-3090
+      containers:
+      - name: vllm
+        image: registry.cnbita.com:5000/lgy/sglang/sglang:v0.4.4.post1-cu124
+        env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: INTERNAL_SERVICE
+            value: "vllm-internal"
+          - name: RAY_PORT
+            value: "6379"
+        command:
+          - sh
+          - -c
+          - |
+            POD_ORDINAL=$(echo "$POD_NAME" | awk -F'-' '{print $NF}')
+            
+            if ! [[ "$POD_ORDINAL" =~ ^[0-9]+$ ]]; then
+              echo "Error: 无法从Pod名称提取有效序号，POD_NAME=$POD_NAME"
+              exit 1
+            fi
+            
+            if [ "$POD_ORDINAL" -eq 0 ]; then
+              echo "Starting leader node (ordinal $POD_ORDINAL)..."
+              bash /custom-scripts/run.sh leader --ray_port=$RAY_PORT --ray_cluster_size=2 
+              python3 -m vllm.entrypoints.openai.api_server --port 8080 --model /model/meta-llama/Llama-3.2-1B-Instruct/ --tensor-parallel-size 2 --pipeline_parallel_size 2
+            else
+              echo "Starting worker node (ordinal $POD_ORDINAL)..."
+              bash /custom-scripts/run.sh worker --ray_address=vllm-cluster-0.$INTERNAL_SERVICE --ray_port=$RAY_PORT
+            fi
+        resources:
+          limits:
+            nvidia.com/nvidia-rtx-3090-24GB: "2"
+          requests:
+            nvidia.com/nvidia-rtx-3090-24GB: "2"
+        ports:
+          - containerPort: 8080
+          - containerPort: 6379
+        volumeMounts:
+          - name: dshm
+            mountPath: /dev/shm
+          - name: serving-script
+            mountPath: /custom-scripts/run.sh
+          - name: model-volume
+            mountPath: /model/meta-llama/Llama-3.2-1B-Instruct
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 15Gi
+        - name: serving-script
+          hostPath:
+            path: /root/wyq/statefulset/run.sh
+            type: File
+        - name: model-volume
+          hostPath:
+            path: /root/wyq/model
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-internal
+spec:
+  clusterIP: None
+  selector:
+    app: vllm
+  ports:
+    - port: 6379
+      name: ray
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-api
+spec:
+  selector:
+    app: vllm
+    controller.kubernetes.io/pod-index: "0"
+  ports:
+    - port: 80
+      targetPort: 8080
+  type: ClusterIP

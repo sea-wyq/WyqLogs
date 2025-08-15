@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-php
+  template:
+    metadata:
+      labels:
+        app: nginx-php
+    spec:
+      containers:
+      - image: lizhenliang/nginx-php
+        name: java
+        resources: 
+           requests:
+             memory: "300Mi"
+             cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx-php
+---
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: web
+spec:
+  maxReplicas: 3
+  minReplicas: 1
+  scaleTargetRef: 
+    apiVersion: apps/v1
+    kind: Deployment
+    name: web
+  targetCPUUtilizationPercentage: 60

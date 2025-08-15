@@ -185,3 +185,6 @@ git push origin mAIn
 
 git lfs pull
 ```
+
+
+export GOSUMDB=off && go mod tidy    可以解决拉去gitlab仓库代码的问题。

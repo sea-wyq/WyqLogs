@@ -1,0 +1,132 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-pri
+value: 1000
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: normal-pri
+value: 100
+---
+apiVersion: batch.volcano.sh/v1alpha1
+kind: Job
+metadata:
+  name: elastic-job
+spec:
+  minAvailable: 2
+  schedulerName: volcano
+  policies:
+  - event: TaskCompleted
+    action: CompleteJob
+  plugins:
+    ssh: [] 
+    svc: []
+  tasks:
+    - replicas: 2
+      minAvailable: 1
+      name: worker
+      template:
+        spec:
+          volumes:
+          - name: my-volume
+            hostPath:
+              path: /home/wyq/elastic
+          priorityClassName: normal-pri
+          restartPolicy: Never
+          containers:
+            - command:
+                - /bin/bash
+                - -c
+                - |
+                  /usr/sbin/sshd;
+                  torchrun --nnodes=1:2 --nproc_per_node=1 --max_restarts=3 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint="elastic-job-master-0.elastic-job.default.svc.cluster.local:1234" /workspace/train.py
+              image: registry.cnbita.com:5000/wuyiqiang/deepspeed:v1
+              name: workers
+              ports:
+                - containerPort: 22
+                  name: port
+              volumeMounts:
+              - name: my-volume
+                mountPath: /workspace
+              resources:
+                limits:
+                  nvidia.com/nvidia-rtx-3090: 1
+    - replicas: 1
+      minAvailable: 1
+      name: master
+      template:
+        spec:
+          volumes:
+          - name: my-volume
+            hostPath:
+              path: /home/wyq/elastic
+          priorityClassName: high-pri
+          restartPolicy: Never
+          containers:
+            - command:
+                - /bin/bash
+                - -c
+                - |
+                  /usr/sbin/sshd;
+                  torchrun --nnodes=1:2 --nproc_per_node=1 --max_restarts=3 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint="elastic-job-master-0.elastic-job.default.svc.cluster.local:1234" /workspace/train.py
+              image: registry.cnbita.com:5000/wuyiqiang/deepspeed:v1
+              name: master
+              ports:
+                - containerPort: 22
+                  name: port
+              volumeMounts:
+              - name: my-volume
+                mountPath: /workspace
+              resources:
+                limits:
+                  nvidia.com/nvidia-rtx-3090: 1
+
+---
+apiVersion: batch.volcano.sh/v1alpha1
+kind: Job
+metadata:
+  name: elastic-job
+spec:
+  minAvailable: 2
+  schedulerName: volcano
+  plugins:
+    ssh: [] 
+    svc: []
+  tasks:
+    - replicas: 3
+      minAvailable: 2
+      name: worker
+      policies:
+      - event: TaskCompleted
+        action: CompleteJob
+      template:
+        spec:
+          volumes:
+          - name: my-volume
+            hostPath:
+              path: /home/wyq/elastic
+          restartPolicy: Never
+          containers:
+            - command:
+                - /bin/bash
+                - -c
+                - |
+                  /usr/sbin/sshd;
+                  torchrun --nnodes=1:2 --nproc_per_node=1 --max_restarts=3 --rdzv_id=1 --rdzv_backend=c10d --rdzv_endpoint="elastic-job-worker-0.elastic-job.default.svc.cluster.local:1234" /workspace/train.py
+              image: registry.cnbita.com:5000/wuyiqiang/deepspeed:v1
+              name: workers
+              ports:
+                - containerPort: 22
+                  name: port
+              volumeMounts:
+              - name: my-volume
+                mountPath: /workspace
+              resources:
+                limits:
+                  nvidia.com/nvidia-rtx-3090: 1
+
+
+

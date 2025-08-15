@@ -57,3 +57,14 @@ docker tag  grafana/mimir:2.15.0  registry.cnbita.com:5000/wuyiqiang/grafana_mim
 docker inspect 镜像名称
 docker inspect 容器名称
 ```
+
+/etc/docker/daemon.json   docker 配置文件地址
+
+docker inspect 容器名称
+docker inspect 镜像名称
+
+docker info 查看docker相关配置信息
+
+## 临时修改容器配置，使用 runc 运行时（以 Docker 为例）
+
+docker run --rm --runtime=runc registry.hub.com:5000/38suo/pytorch-train-38:1.2

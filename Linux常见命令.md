@@ -289,3 +289,9 @@ $ stress -c 4
 消耗内存资源
 $ stress --vm 2 --vm-bytes 300M --vm-keep
 ```
+
+## 可以删除所有python进程
+
+```bash
+pkill -f python
+```

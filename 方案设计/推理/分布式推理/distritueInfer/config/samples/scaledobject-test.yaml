@@ -1,0 +1,19 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: vllmcluster-sample-scaler
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: training.distributed-inference.io/v1alpha1
+    kind: VLLMCluster
+    name: vllmcluster-sample
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  pollingInterval: 10  # 每10秒检查一次（快速测试）
+  triggers:
+  # CPU-based scaling for testing
+  - type: cpu
+    metadata:
+      type: Utilization
+      value: '30'  # 较低阈值便于触发扩容

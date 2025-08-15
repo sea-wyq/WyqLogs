@@ -1,0 +1,14 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: vllmcluster-external-scaler
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: training.distributed-inference.io/v1alpha1
+    kind: VLLMCluster
+    name: vllmcluster-sample
+  minReplicaCount: 2
+  maxReplicaCount: 4
+  # 暂时不设置触发器，让它保持在 minReplicas
+  triggers: []
